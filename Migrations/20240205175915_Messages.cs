@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ShoppingProject.Migrations
 {
     /// <inheritdoc />
-    public partial class PortfolioManyToMany : Migration
+    public partial class Messages : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,21 +55,16 @@ namespace ShoppingProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stocks",
+                name: "ChatGroups",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CompanyName = table.Column<string>(type: "text", nullable: false),
-                    Symbol = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    LastDiv = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    Industry = table.Column<string>(type: "text", nullable: false),
-                    MarketCap = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Logo = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stocks", x => x.Id);
+                    table.PrimaryKey("PK_ChatGroups", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -179,46 +174,59 @@ namespace ShoppingProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
+                name: "JoinedChats",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    StockId = table.Column<int>(type: "integer", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ChatGroupId = table.Column<string>(type: "text", nullable: false),
+                    ChatGroupId1 = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsAccepted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false),
+                    IsBanned = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.PrimaryKey("PK_JoinedChats", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Stocks_StockId",
-                        column: x => x.StockId,
-                        principalTable: "Stocks",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Portfolios",
-                columns: table => new
-                {
-                    AppUserId = table.Column<string>(type: "text", nullable: false),
-                    StockId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Portfolios", x => new { x.AppUserId, x.StockId });
-                    table.ForeignKey(
-                        name: "FK_Portfolios_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_JoinedChats_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Portfolios_Stocks_StockId",
-                        column: x => x.StockId,
-                        principalTable: "Stocks",
+                        name: "FK_JoinedChats_ChatGroups_ChatGroupId1",
+                        column: x => x.ChatGroupId1,
+                        principalTable: "ChatGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    Attachment = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ChatGroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SenderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SenderId1 = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_SenderId1",
+                        column: x => x.SenderId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Messages_ChatGroups_ChatGroupId",
+                        column: x => x.ChatGroupId,
+                        principalTable: "ChatGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -228,9 +236,19 @@ namespace ShoppingProject.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "8aacf4f9-609d-44de-a411-6dc19bcc6611", null, "Admin", "ADMIN" },
-                    { "fd5825b8-70c2-4a0d-b67a-0b77d4efbf59", null, "User", "USER" }
+                    { "00737a72-5d42-46a2-b30b-32d493ed1586", null, "Admin", "ADMIN" },
+                    { "b58a2dc6-2079-48b1-81ef-64b399a96603", null, "User", "USER" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "Bio", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "2cf5e485-554c-4600-9092-a1e6fd373e7c", 0, "I am the admin", "0dafee2a-1235-40b8-9b72-f438cbb146cd", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEFCnFY8UxyQEcj0U+TwtDsCpfA+P5VXk+yH1Yr7geBHhiiZev7bbgAdM2ZnkIR7RFQ==", null, false, "41c59627-577e-4dd0-9637-9c551fe958cc", false, "admin" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "00737a72-5d42-46a2-b30b-32d493ed1586", "2cf5e485-554c-4600-9092-a1e6fd373e7c" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -270,14 +288,24 @@ namespace ShoppingProject.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_StockId",
-                table: "Comments",
-                column: "StockId");
+                name: "IX_JoinedChats_ChatGroupId1",
+                table: "JoinedChats",
+                column: "ChatGroupId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Portfolios_StockId",
-                table: "Portfolios",
-                column: "StockId");
+                name: "IX_JoinedChats_UserId",
+                table: "JoinedChats",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_ChatGroupId",
+                table: "Messages",
+                column: "ChatGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_SenderId1",
+                table: "Messages",
+                column: "SenderId1");
         }
 
         /// <inheritdoc />
@@ -299,10 +327,10 @@ namespace ShoppingProject.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Comments");
+                name: "JoinedChats");
 
             migrationBuilder.DropTable(
-                name: "Portfolios");
+                name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -311,7 +339,7 @@ namespace ShoppingProject.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Stocks");
+                name: "ChatGroups");
         }
     }
 }

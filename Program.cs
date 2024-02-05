@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using ShoppingProject.Data;
-using ShoppingProject.Interfaces;
-using ShoppingProject.Repositories;
 using Newtonsoft.Json;
 using ShoppingProject.Models;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ShoppingProject.Services;
 using Microsoft.OpenApi.Models;
+using ccnd.Interfaces;
+using chatapp.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -46,9 +46,6 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<IStockRepository, StockRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 
@@ -93,6 +90,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(config["Jwt:SigningKey"]!))
     };
 });
+
+builder.Services.AddScoped<MessageRepository>();
 
 var app = builder.Build();
 app.MapControllers();

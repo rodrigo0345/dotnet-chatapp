@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "GN9AF6pQtaMinYD4rqfVpsw1u9MEwYIN6dKSdEz79IVJn4uxZhg9VajmmS3EEb3H2lsN5+v2kIRjFdPU29sBVQ==",
+  "dgSpecHash": "SDkJoKyCU9rn/DIVoy2R5tREgwljRE8LUWCa4Uh+o4GjMhpxunRokMr210RYpLQQtP8z3wgRVrwdC6X3ptFpKA==",
   "success": true,
-  "projectFilePath": "/home/rodrigo0345/dev/dotnet_folder/ShoppingProject/ShoppingProject.csproj",
+  "projectFilePath": "/home/rodrigo0345/dev/dotnet_folder/dotnet-chatapp/ShoppingProject.csproj",
   "expectedPackageFiles": [
     "/home/rodrigo0345/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/home/rodrigo0345/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/8.0.1/microsoft.aspnetcore.authentication.jwtbearer.8.0.1.nupkg.sha512",

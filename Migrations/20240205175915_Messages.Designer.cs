@@ -12,8 +12,8 @@ using ShoppingProject.Data;
 namespace ShoppingProject.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    [Migration("20240201192728_PortfolioManyToMany")]
-    partial class PortfolioManyToMany
+    [Migration("20240205175915_Messages")]
+    partial class Messages
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,13 +53,13 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8aacf4f9-609d-44de-a411-6dc19bcc6611",
+                            Id = "00737a72-5d42-46a2-b30b-32d493ed1586",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "fd5825b8-70c2-4a0d-b67a-0b77d4efbf59",
+                            Id = "b58a2dc6-2079-48b1-81ef-64b399a96603",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -150,6 +150,13 @@ namespace ShoppingProject.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "2cf5e485-554c-4600-9092-a1e6fd373e7c",
+                            RoleId = "00737a72-5d42-46a2-b30b-32d493ed1586"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -237,15 +244,93 @@ namespace ShoppingProject.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "2cf5e485-554c-4600-9092-a1e6fd373e7c",
+                            AccessFailedCount = 0,
+                            Bio = "I am the admin",
+                            ConcurrencyStamp = "0dafee2a-1235-40b8-9b72-f438cbb146cd",
+                            Email = "admin@gmail.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@GMAIL.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFCnFY8UxyQEcj0U+TwtDsCpfA+P5VXk+yH1Yr7geBHhiiZev7bbgAdM2ZnkIR7RFQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "41c59627-577e-4dd0-9637-9c551fe958cc",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
-            modelBuilder.Entity("ShoppingProject.Models.Comment", b =>
+            modelBuilder.Entity("chatapp.Models.ChatGroup", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Logo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChatGroups");
+                });
+
+            modelBuilder.Entity("chatapp.Models.JoinedChat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ChatGroupId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ChatGroupId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsBanned")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatGroupId1");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("JoinedChats");
+                });
+
+            modelBuilder.Entity("chatapp.Models.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ChatGroupId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -254,67 +339,22 @@ namespace ShoppingProject.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("StockId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
+                    b.Property<string>("SenderId1")
                         .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StockId");
+                    b.HasIndex("ChatGroupId");
 
-                    b.ToTable("Comments");
-                });
+                    b.HasIndex("SenderId1");
 
-            modelBuilder.Entity("ShoppingProject.Models.Portfolio", b =>
-                {
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("text");
-
-                    b.Property<int>("StockId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("AppUserId", "StockId");
-
-                    b.HasIndex("StockId");
-
-                    b.ToTable("Portfolios");
-                });
-
-            modelBuilder.Entity("ShoppingProject.Models.Stock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Industry")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("LastDiv")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<long>("MarketCap")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Symbol")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Stocks");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -368,44 +408,45 @@ namespace ShoppingProject.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ShoppingProject.Models.Comment", b =>
+            modelBuilder.Entity("chatapp.Models.JoinedChat", b =>
                 {
-                    b.HasOne("ShoppingProject.Models.Stock", "Stock")
-                        .WithMany("Comments")
-                        .HasForeignKey("StockId");
+                    b.HasOne("chatapp.Models.ChatGroup", "ChatGroup")
+                        .WithMany()
+                        .HasForeignKey("ChatGroupId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Stock");
+                    b.HasOne("ShoppingProject.Models.AppUser", "User")
+                        .WithMany("Chats")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatGroup");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ShoppingProject.Models.Portfolio", b =>
+            modelBuilder.Entity("chatapp.Models.Message", b =>
                 {
-                    b.HasOne("ShoppingProject.Models.AppUser", "AppUser")
-                        .WithMany("Portfolios")
-                        .HasForeignKey("AppUserId")
+                    b.HasOne("chatapp.Models.ChatGroup", "ChatGroup")
+                        .WithMany()
+                        .HasForeignKey("ChatGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShoppingProject.Models.Stock", "Stock")
-                        .WithMany("Portfolios")
-                        .HasForeignKey("StockId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("ShoppingProject.Models.AppUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId1");
 
-                    b.Navigation("AppUser");
+                    b.Navigation("ChatGroup");
 
-                    b.Navigation("Stock");
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("ShoppingProject.Models.AppUser", b =>
                 {
-                    b.Navigation("Portfolios");
-                });
-
-            modelBuilder.Entity("ShoppingProject.Models.Stock", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Portfolios");
+                    b.Navigation("Chats");
                 });
 #pragma warning restore 612, 618
         }

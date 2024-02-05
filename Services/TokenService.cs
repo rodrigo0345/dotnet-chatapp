@@ -6,8 +6,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ccnd.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using ShoppingProject.Interfaces;
 using ShoppingProject.Models;
 
 namespace ShoppingProject.Services
@@ -16,14 +17,16 @@ namespace ShoppingProject.Services
     {
         private readonly IConfiguration _configuration;
         private readonly SymmetricSecurityKey _key;
+        private readonly UserManager<AppUser> _userManager;
 
         // para ter acesso ao que está dentro de appsettings.json
-        public TokenService(IConfiguration configuration)
+        public TokenService(IConfiguration configuration, UserManager<AppUser> userManager)
         {
             _configuration = configuration;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]!));
+            _userManager = userManager;
         }
-        public string CreateToken(AppUser user)
+        public async Task<string> CreateToken(AppUser user)
         {
             var claims = new List<Claim> {
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),

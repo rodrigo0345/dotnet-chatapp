@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using chatapp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,17 +22,12 @@ namespace ShoppingProject.Data
         {
         }
 
-        public DbSet<ShoppingProject.Models.Stock> Stock { get; set; }
-        public DbSet<ShoppingProject.Models.Comment> Comment { get; set; }
-        public DbSet<ShoppingProject.Models.Portfolio> Portfolio { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<ChatGroup> ChatGroups { get; set; }
+        public DbSet<JoinedChat> JoinedChats { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Portfolio>(x => x.HasKey(y => new { y.AppUserId, y.StockId }));
-
-            builder.Entity<Portfolio>().HasOne(u => u.AppUser).WithMany(p => p.Portfolios).HasForeignKey(u => u.AppUserId);
-            builder.Entity<Portfolio>().HasOne(u => u.Stock).WithMany(p => p.Portfolios).HasForeignKey(u => u.StockId);
-
             base.OnModelCreating(builder);
             List<IdentityRole> roles = new List<IdentityRole>{
                 new IdentityRole { Name = Role.Admin.ToString(), NormalizedName = "ADMIN" },
@@ -39,6 +35,28 @@ namespace ShoppingProject.Data
             };
 
             builder.Entity<IdentityRole>().HasData(roles);
+
+            AppUser admin = new AppUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "admin",
+                Email = "admin@gmail.com",
+                EmailConfirmed = true,
+                NormalizedEmail = "ADMIN@GMAIL.COM",
+                NormalizedUserName = "ADMIN",
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Bio = "I am the admin",
+                PasswordHash = new PasswordHasher<AppUser>().HashPassword(null, "admin"),
+            };
+
+            // Add admin role
+            builder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
+            {
+                RoleId = roles[0].Id,
+                UserId = admin.Id
+            });
+
+            builder.Entity<AppUser>().HasData(admin);
         }
 
     }

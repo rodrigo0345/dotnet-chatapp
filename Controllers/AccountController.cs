@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ccnd.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingProject.Data;
 using ShoppingProject.Dtos.User;
-using ShoppingProject.Interfaces;
 using ShoppingProject.Models;
 using ShoppingProject.Services;
 
@@ -54,7 +54,7 @@ namespace ShoppingProject.Controllers
                         {
                             Username = appUser.UserName!,
                             Email = appUser.Email!,
-                            Token = _tokenService.CreateToken(appUser)
+                            Token = await _tokenService.CreateToken(appUser)
                         });
                     }
                     return StatusCode(500);
@@ -89,7 +89,7 @@ namespace ShoppingProject.Controllers
             {
                 Username = user.UserName!,
                 Email = user.Email!,
-                Token = _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user)
             });
         }
     }

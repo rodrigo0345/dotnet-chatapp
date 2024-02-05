@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using chatapp.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace ShoppingProject.Models
@@ -10,7 +11,7 @@ namespace ShoppingProject.Models
     {
         public string Bio { get; set; } = String.Empty;
 
-        public List<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
+        public List<JoinedChat> Chats { get; set; } = new List<JoinedChat>();
 
     }
 }
