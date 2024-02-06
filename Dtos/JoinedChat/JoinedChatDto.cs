@@ -8,21 +8,17 @@ using chatapp.Models;
 
 namespace chatapp.Dtos.Message
 {
-    public class ChatGroupDto
+    public class JoinedChatDto
     {
         [Required]
         public Guid Id { get; set; } = Guid.Empty;
 
         [Required]
-        [MinLength(3)]
-        [MaxLength(50)]
-        public string Name { get; set; } = String.Empty;
+        public ChatGroup ChatGroup { get; set; } = null!;
 
-        [Required]
-        [MinLength(3)]
-        public string Logo { get; set; } = String.Empty;
-
-        [Required]
-        public string OwnerId { get; set; } = null!;
+        public bool IsAccepted { get; set; }
+        public bool IsAdmin { get; set; }
+        public bool IsBanned { get; set; }
+        public string UserId { get; set; } = String.Empty;
     }
 }

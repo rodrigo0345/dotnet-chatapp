@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using chatapp.Dtos.Message;
 using chatapp.Helpers;
 using chatapp.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace chatapp.Controllers
@@ -8,6 +10,7 @@ namespace chatapp.Controllers
 
     [ApiController]
     [Route("api/group")]
+    [Authorize]
     public class ChatGroup : Controller
     {
         private readonly ChatGroupRepository _chatGroupRepository;
@@ -17,9 +20,21 @@ namespace chatapp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateChatGroup([FromBody] CreateChatGroupDto createChatGroup, CancellationToken ct)
+        public async Task<IActionResult> CreateChatGroup([FromBody] CreateChatGroupDto createChatGroup, CancellationToken ct, ClaimsPrincipal principal)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (createChatGroup.OwnerId == null)
+            {
+                if (principal.Identity!.Name == null)
+                {
+                    return BadRequest("Invalid user");
+                }
+
+                // set the owner of the chat group to the user that is logged in
+                createChatGroup.OwnerId = principal.Identity!.Name!;
+                Console.WriteLine($"Your id: {principal.Identity!.Name!}");
+            }
 
             var result = await _chatGroupRepository.createOneAsync(createChatGroup, ct);
             if (result != null)

@@ -8,7 +8,7 @@ using chatapp.Models;
 
 namespace chatapp.Helpers
 {
-    public class ChatGroupQueryObject : IQueryObject
+    public class ChatGroupQueryObject
     {
         public string Query { get; set; } = String.Empty;
 

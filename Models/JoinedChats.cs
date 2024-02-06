@@ -15,7 +15,7 @@ namespace chatapp.Models
         public string UserId { get; set; } = String.Empty;
         public AppUser User { get; set; } = null!;
 
-        public string ChatGroupId { get; set; } = String.Empty;
+        public Guid ChatGroupId { get; set; } = Guid.Empty;
         public ChatGroup ChatGroup { get; set; } = null!;
 
         public bool IsAccepted { get; set; }

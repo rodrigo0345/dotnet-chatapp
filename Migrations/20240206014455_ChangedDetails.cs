@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ShoppingProject.Migrations
 {
     /// <inheritdoc />
-    public partial class Messages : Migration
+    public partial class ChangedDetails : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,19 +52,6 @@ namespace ShoppingProject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ChatGroups",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Logo = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChatGroups", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -174,13 +161,32 @@ namespace ShoppingProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatGroups",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Logo = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatGroups", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatGroups_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "JoinedChats",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    ChatGroupId = table.Column<string>(type: "text", nullable: false),
-                    ChatGroupId1 = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChatGroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsAccepted = table.Column<bool>(type: "boolean", nullable: false),
                     IsAdmin = table.Column<bool>(type: "boolean", nullable: false),
                     IsBanned = table.Column<bool>(type: "boolean", nullable: false)
@@ -195,8 +201,8 @@ namespace ShoppingProject.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_JoinedChats_ChatGroups_ChatGroupId1",
-                        column: x => x.ChatGroupId1,
+                        name: "FK_JoinedChats_ChatGroups_ChatGroupId",
+                        column: x => x.ChatGroupId,
                         principalTable: "ChatGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -236,19 +242,19 @@ namespace ShoppingProject.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "00737a72-5d42-46a2-b30b-32d493ed1586", null, "Admin", "ADMIN" },
-                    { "b58a2dc6-2079-48b1-81ef-64b399a96603", null, "User", "USER" }
+                    { "512be3c6-879a-439f-b05e-ab5aadb58abb", null, "User", "USER" },
+                    { "d1819308-b073-430b-82bd-5a199dc3354b", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "Bio", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "2cf5e485-554c-4600-9092-a1e6fd373e7c", 0, "I am the admin", "0dafee2a-1235-40b8-9b72-f438cbb146cd", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEFCnFY8UxyQEcj0U+TwtDsCpfA+P5VXk+yH1Yr7geBHhiiZev7bbgAdM2ZnkIR7RFQ==", null, false, "41c59627-577e-4dd0-9637-9c551fe958cc", false, "admin" });
+                values: new object[] { "68bc2d6a-9b85-4815-bdcd-725a696a05ee", 0, "I am the admin", "73d63e1b-0078-405d-b3ee-fb7450bfc3cb", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAED/QzEwDrn+cBp0y74GDS9eix5I+D2oJx/xhDqNY18jZS+rmrnPUOQUWmjbQ+1OQIQ==", null, false, "01523629-be0a-4bbb-9c3f-a5ec7793dc74", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "00737a72-5d42-46a2-b30b-32d493ed1586", "2cf5e485-554c-4600-9092-a1e6fd373e7c" });
+                values: new object[] { "d1819308-b073-430b-82bd-5a199dc3354b", "68bc2d6a-9b85-4815-bdcd-725a696a05ee" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -288,9 +294,14 @@ namespace ShoppingProject.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_JoinedChats_ChatGroupId1",
+                name: "IX_ChatGroups_UserId",
+                table: "ChatGroups",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JoinedChats_ChatGroupId",
                 table: "JoinedChats",
-                column: "ChatGroupId1");
+                column: "ChatGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JoinedChats_UserId",
@@ -336,10 +347,10 @@ namespace ShoppingProject.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "ChatGroups");
 
             migrationBuilder.DropTable(
-                name: "ChatGroups");
+                name: "AspNetUsers");
         }
     }
 }

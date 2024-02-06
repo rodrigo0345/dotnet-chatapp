@@ -31,7 +31,8 @@ namespace chatapp.Repositories
             {
                 Id = id,
                 Name = model.Name,
-                Logo = model.Logo
+                Logo = model.Logo,
+                UserId = model.OwnerId
             });
             int result = await _context.SaveChangesAsync(cancellationToken);
 
@@ -41,7 +42,8 @@ namespace chatapp.Repositories
                 {
                     Id = id,
                     Name = model.Name,
-                    Logo = model.Logo
+                    Logo = model.Logo,
+                    OwnerId = model.OwnerId
                 };
             }
 
@@ -77,6 +79,7 @@ namespace chatapp.Repositories
                 Id = m.Id,
                 Name = m.Name,
                 Logo = m.Logo,
+                OwnerId = m.UserId
             });
 
             return result.ToList();
@@ -101,7 +104,7 @@ namespace chatapp.Repositories
 
         public async Task<ChatGroupDto?> updateOneAsync(UpdateChatGroupDto model, CancellationToken cancellationToken = default)
         {
-            var found = _context.ChatGroups.FirstOrDefaultAsync(c => c.Id == model.Id, cancellationToken);
+            var found = await _context.ChatGroups.FirstOrDefaultAsync(c => c.Id == model.Id, cancellationToken);
 
             if (found == null) return null;
 
@@ -119,7 +122,8 @@ namespace chatapp.Repositories
                 {
                     Id = model.Id,
                     Name = model.Name,
-                    Logo = model.Logo
+                    Logo = model.Logo,
+                    OwnerId = found.UserId
                 };
             }
             return null;

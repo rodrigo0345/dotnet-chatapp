@@ -8,7 +8,7 @@ using chatapp.Models;
 
 namespace chatapp.Helpers
 {
-    public class MessageQueryObject : IQueryObject
+    public class MessageQueryObject
     {
         public string Query { get; set; } = String.Empty;
         public string OrderBy { get; set; } = "createdOn";

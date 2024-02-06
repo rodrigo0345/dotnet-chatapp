@@ -19,5 +19,7 @@ namespace chatapp.Dtos.Message
         [MinLength(3)]
         public string Logo { get; set; } = String.Empty;
 
+        public string OwnerId { get; set; } = String.Empty;
+
     }
 }

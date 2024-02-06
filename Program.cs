@@ -19,6 +19,8 @@ var config = builder.Configuration;
 
 builder.Services.AddScoped<MessageRepository>();
 builder.Services.AddScoped<ChatGroupRepository>();
+builder.Services.AddScoped<JoinedChatGroupRepository>();
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

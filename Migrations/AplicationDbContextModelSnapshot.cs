@@ -50,13 +50,13 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "00737a72-5d42-46a2-b30b-32d493ed1586",
+                            Id = "d1819308-b073-430b-82bd-5a199dc3354b",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "b58a2dc6-2079-48b1-81ef-64b399a96603",
+                            Id = "512be3c6-879a-439f-b05e-ab5aadb58abb",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -151,8 +151,8 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "2cf5e485-554c-4600-9092-a1e6fd373e7c",
-                            RoleId = "00737a72-5d42-46a2-b30b-32d493ed1586"
+                            UserId = "68bc2d6a-9b85-4815-bdcd-725a696a05ee",
+                            RoleId = "d1819308-b073-430b-82bd-5a199dc3354b"
                         });
                 });
 
@@ -245,18 +245,18 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2cf5e485-554c-4600-9092-a1e6fd373e7c",
+                            Id = "68bc2d6a-9b85-4815-bdcd-725a696a05ee",
                             AccessFailedCount = 0,
                             Bio = "I am the admin",
-                            ConcurrencyStamp = "0dafee2a-1235-40b8-9b72-f438cbb146cd",
+                            ConcurrencyStamp = "73d63e1b-0078-405d-b3ee-fb7450bfc3cb",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFCnFY8UxyQEcj0U+TwtDsCpfA+P5VXk+yH1Yr7geBHhiiZev7bbgAdM2ZnkIR7RFQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAED/QzEwDrn+cBp0y74GDS9eix5I+D2oJx/xhDqNY18jZS+rmrnPUOQUWmjbQ+1OQIQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "41c59627-577e-4dd0-9637-9c551fe958cc",
+                            SecurityStamp = "01523629-be0a-4bbb-9c3f-a5ec7793dc74",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -276,7 +276,13 @@ namespace ShoppingProject.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ChatGroups");
                 });
@@ -287,11 +293,7 @@ namespace ShoppingProject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ChatGroupId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ChatGroupId1")
+                    b.Property<Guid>("ChatGroupId")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsAccepted")
@@ -309,7 +311,7 @@ namespace ShoppingProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChatGroupId1");
+                    b.HasIndex("ChatGroupId");
 
                     b.HasIndex("UserId");
 
@@ -405,11 +407,22 @@ namespace ShoppingProject.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("chatapp.Models.ChatGroup", b =>
+                {
+                    b.HasOne("ShoppingProject.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("chatapp.Models.JoinedChat", b =>
                 {
                     b.HasOne("chatapp.Models.ChatGroup", "ChatGroup")
                         .WithMany()
-                        .HasForeignKey("ChatGroupId1")
+                        .HasForeignKey("ChatGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
