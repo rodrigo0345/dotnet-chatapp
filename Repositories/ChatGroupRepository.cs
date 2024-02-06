@@ -61,7 +61,7 @@ namespace chatapp.Repositories
 
             if (result > 0)
             {
-                return null;
+                return "Deleted successfully";
             }
 
             return "Error deleting message";
@@ -101,7 +101,7 @@ namespace chatapp.Repositories
 
         public async Task<ChatGroupDto?> updateOneAsync(UpdateChatGroupDto model, CancellationToken cancellationToken = default)
         {
-            var found = _context.ChatGroups.Find(model.Id, cancellationToken);
+            var found = _context.ChatGroups.FirstOrDefaultAsync(c => c.Id == model.Id, cancellationToken);
 
             if (found == null) return null;
 

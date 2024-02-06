@@ -1,17 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 using chatapp.Dtos.Message;
 using chatapp.Helpers;
-using chatapp.Models;
 using chatapp.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace chatapp.Controllers
 {
 
-    [Route("api/message")]
+    [ApiController]
+    [Route("api/[controller]")]
     public class MessageController : Controller
     {
         private readonly MessageRepository _messageRepository;
@@ -20,14 +17,14 @@ namespace chatapp.Controllers
             _messageRepository = messageRepository;
         }
 
-        [HttpPost()]
-        public async Task<IActionResult> CreateMessage([FromBody] CreateMessageDto createMessageDto)
+        [HttpPost]
+        public async Task<IActionResult> CreateMessage([FromBody] CreateMessageDto dto, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            createMessageDto.SenderId = Guid.Parse(User.Identity!.Name!);
+            dto.SenderId = Guid.Parse(User.Identity!.Name!);
 
-            var result = await _messageRepository.createOneAsync(createMessageDto);
+            var result = await _messageRepository.createOneAsync(dto, ct);
             if (result != null)
             {
                 return Ok(result);
@@ -35,12 +32,12 @@ namespace chatapp.Controllers
             return StatusCode(500, "It was not possible to create the message");
         }
 
-        [HttpPut()]
-        public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageDto updateMessageDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdateMessage(UpdateMessageDto updateMessageDto, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var result = await _messageRepository.updateOneAsync(updateMessageDto);
+            var result = await _messageRepository.updateOneAsync(updateMessageDto, ct);
             if (result != null)
             {
                 return Ok(result);
@@ -48,10 +45,10 @@ namespace chatapp.Controllers
             return StatusCode(500, "It was not possible to update the message");
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMessage(Guid id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteMessage(Guid id, CancellationToken ct)
         {
-            var result = await _messageRepository.deleteOneAsync(id);
+            var result = await _messageRepository.deleteOneAsync(id, ct);
             if (result != null)
             {
                 return Ok(result);
@@ -60,10 +57,10 @@ namespace chatapp.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetMessage(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetMessage(Guid id, CancellationToken ct)
         {
-            var result = await _messageRepository.getOneAsync(id);
+            var result = await _messageRepository.getOneAsync(id, ct);
             if (result != null)
             {
                 return Ok(result);
@@ -71,16 +68,15 @@ namespace chatapp.Controllers
             return StatusCode(500, "It was not possible to get the message");
         }
 
-        [HttpGet()]
-        public async Task<IActionResult> GetMessages([FromQuery] MessageQueryObject queryObject)
+        [HttpGet]
+        public async Task<IActionResult> GetMessages([FromQuery] MessageQueryObject queryObject, CancellationToken ct)
         {
-            var result = await _messageRepository.getAllAsync(queryObject);
+            var result = await _messageRepository.getAllAsync(queryObject, ct);
             if (result != null)
             {
                 return Ok(result);
             }
             return StatusCode(500, "It was not possible to get the messages");
         }
-
     }
 }

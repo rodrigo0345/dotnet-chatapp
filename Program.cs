@@ -10,10 +10,15 @@ using ShoppingProject.Services;
 using Microsoft.OpenApi.Models;
 using ccnd.Interfaces;
 using chatapp.Repositories;
+using chatapp.Models;
+using Microsoft.OpenApi.Any;
+using chatapp.Dtos.Message;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
+builder.Services.AddScoped<MessageRepository>();
+builder.Services.AddScoped<ChatGroupRepository>();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -28,20 +33,6 @@ builder.Services.AddSwaggerGen(option =>
         Type = SecuritySchemeType.Http,
         BearerFormat = "JWT",
         Scheme = "Bearer"
-    });
-    option.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new string[]{}
-        }
     });
 });
 
@@ -91,7 +82,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddScoped<MessageRepository>();
 
 var app = builder.Build();
 app.MapControllers();
@@ -105,6 +95,7 @@ if (app.Environment.IsDevelopment())
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             options.RoutePrefix = string.Empty;
+            options.DisplayRequestDuration();
         }
     );
 }

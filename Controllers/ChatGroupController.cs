@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using chatapp.Dtos.Message;
 using chatapp.Helpers;
-using chatapp.Models;
 using chatapp.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace chatapp.Controllers
 {
 
-    [Route("api/message")]
+    [ApiController]
+    [Route("api/group")]
     public class ChatGroup : Controller
     {
         private readonly ChatGroupRepository _chatGroupRepository;
@@ -20,12 +16,12 @@ namespace chatapp.Controllers
             _chatGroupRepository = chatGroupRepository;
         }
 
-        [HttpPost()]
-        public async Task<IActionResult> CreateChatGroup([FromBody] CreateChatGroupDto createChatGroup)
+        [HttpPost]
+        public async Task<IActionResult> CreateChatGroup([FromBody] CreateChatGroupDto createChatGroup, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var result = await _chatGroupRepository.createOneAsync(createChatGroup);
+            var result = await _chatGroupRepository.createOneAsync(createChatGroup, ct);
             if (result != null)
             {
                 return Ok(result);
@@ -33,12 +29,18 @@ namespace chatapp.Controllers
             return StatusCode(500, "It was not possible to create the message");
         }
 
-        [HttpPut()]
-        public async Task<IActionResult> UpdateChatGroup([FromBody] UpdateChatGroupDto updateChatGroupDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdateChatGroup([FromBody] UpdateChatGroupDto updateChatGroupDto, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var result = await _chatGroupRepository.updateOneAsync(updateChatGroupDto);
+            // check for valid id
+            if (updateChatGroupDto.Id == Guid.Empty)
+            {
+                return BadRequest("Invalid id");
+            }
+
+            var result = await _chatGroupRepository.updateOneAsync(updateChatGroupDto, ct);
             if (result != null)
             {
                 return Ok(result);
@@ -46,7 +48,7 @@ namespace chatapp.Controllers
             return StatusCode(500, "It was not possible to update the message");
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteChatGroup(Guid id)
         {
             var result = await _chatGroupRepository.deleteOneAsync(id);
@@ -58,10 +60,10 @@ namespace chatapp.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetChatGroup(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetChatGroup([FromRoute] Guid id, CancellationToken ct)
         {
-            var result = await _chatGroupRepository.getOneAsync(id);
+            var result = await _chatGroupRepository.getOneAsync(id, ct);
             if (result != null)
             {
                 return Ok(result);
@@ -70,9 +72,9 @@ namespace chatapp.Controllers
         }
 
         [HttpGet()]
-        public async Task<IActionResult> GetChatGroups([FromQuery] ChatGroupQueryObject queryObject)
+        public async Task<IActionResult> GetChatGroups([FromQuery] ChatGroupQueryObject queryObject, CancellationToken ct)
         {
-            var result = await _chatGroupRepository.getAllAsync(queryObject);
+            var result = await _chatGroupRepository.getAllAsync(queryObject, ct);
             if (result != null)
             {
                 return Ok(result);

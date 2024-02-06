@@ -1,26 +1,19 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using ccnd.Interfaces;
 using chatapp.Models;
 
 namespace chatapp.Dtos.Message
 {
-    public class CreateMessageDto : ICreateDto
+    public class CreateMessageDto
     {
-        public string Content = String.Empty;
-        public string Attachment = String.Empty;
-
-        [Required(ErrorMessage = "Type is required")]
-        public MessageType Type = MessageType.Text;
-
         [Required(ErrorMessage = "ChatGroupId is required")]
-        public Guid ChatGroupId = Guid.Empty;
+        public Guid ChatGroupId { get; set; } = Guid.Empty;
 
         [Required(ErrorMessage = "SenderId is required")]
-        public Guid SenderId = Guid.Empty;
+        public Guid SenderId { get; set; } = Guid.Empty;
+        public string Content { get; set; } = String.Empty;
+        public string Attachment { get; set; } = String.Empty;
 
+        [Required(ErrorMessage = "Type is required")]
+        public MessageType Type { get; set; } = MessageType.Text;
     }
 }

@@ -7,9 +7,6 @@ namespace ccnd.Interfaces.Repositories
 {
     public interface IRepository<DTO, QOBJ, CDTO, UDTO>
         where DTO : class
-        where QOBJ : IQueryObject
-        where CDTO : ICreateDto
-        where UDTO : IUpdateDto
     {
         public Task<DTO?> getOneAsync(Guid id, CancellationToken cancellationToken = default);
         public Task<List<DTO>> getAllAsync(QOBJ queryObject, CancellationToken cancellationToken = default);

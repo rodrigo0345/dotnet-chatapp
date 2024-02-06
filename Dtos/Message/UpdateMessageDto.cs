@@ -1,19 +1,26 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using ccnd.Interfaces;
 using chatapp.Models;
 
 namespace chatapp.Dtos.Message
 {
-    public class UpdateMessageDto : IUpdateDto
+    public class UpdateMessageDto
     {
-        [Required(ErrorMessage = "Id is required")]
-        public Guid Id = Guid.Empty;
-        public string Content = String.Empty;
-        public string Attachment = String.Empty;
-        public MessageType Type = MessageType.Text;
+        [Required]
+        public Guid Id { get; set; } = Guid.Empty;
+
+        [Required]
+        [MinLength(3)]
+        [MaxLength(500)]
+        public string Content { get; set; } = String.Empty;
+
+        [Required]
+        [MinLength(3)]
+        [MaxLength(500)]
+        public string Attachment { get; set; } = String.Empty;
+
+        [Required]
+        [MinLength(3)]
+        [MaxLength(500)]
+        public string Type { get; set; } = MessageType.Text.ToString();
     }
 }

@@ -124,7 +124,7 @@ namespace chatapp.Repositories
 
         public async Task<MessageDto?> getOneAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var found = await _context.Messages.FindAsync(id, cancellationToken);
+            var found = await _context.Messages.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
             if (found == null)
             {
@@ -145,16 +145,20 @@ namespace chatapp.Repositories
 
         public async Task<MessageDto?> updateOneAsync(UpdateMessageDto model, CancellationToken cancellationToken = default)
         {
-            var found = _context.Messages.Find(model.Id, cancellationToken);
+            var found = await _context.Messages.FirstOrDefaultAsync(c => c.Id == model.Id, cancellationToken);
 
             if (found == null) return null;
+
+            var enumType = Enum.TryParse<MessageType>(model.Type, out var type);
+
+            if (!enumType) return null;
 
             _context.Messages.Update(new Message
             {
                 Id = model.Id,
                 Content = model.Content,
                 Attachment = model.Attachment,
-                Type = model.Type
+                Type = type
             });
             int result = await _context.SaveChangesAsync(cancellationToken);
 
@@ -165,7 +169,7 @@ namespace chatapp.Repositories
                     Id = model.Id,
                     Content = model.Content,
                     Attachment = model.Attachment,
-                    Type = model.Type,
+                    Type = type,
                     ChatGroupId = found.ChatGroupId,
                     CreatedOn = found.CreatedOn,
                     SenderId = found.SenderId

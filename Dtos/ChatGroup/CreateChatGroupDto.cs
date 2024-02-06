@@ -8,7 +8,7 @@ using chatapp.Models;
 
 namespace chatapp.Dtos.Message
 {
-    public class CreateChatGroupDto : ICreateDto
+    public class CreateChatGroupDto
     {
         [Required]
         [MinLength(3)]
