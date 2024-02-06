@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "/home/rodrigo0345/dev/dotnet_folder/dotnet-chatapp/ShoppingProject.csproj": {}
+    "E:\\dotnet\\dotnet-chatapp\\ShoppingProject.csproj": {}
   },
   "projects": {
-    "/home/rodrigo0345/dev/dotnet_folder/dotnet-chatapp/ShoppingProject.csproj": {
+    "E:\\dotnet\\dotnet-chatapp\\ShoppingProject.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/rodrigo0345/dev/dotnet_folder/dotnet-chatapp/ShoppingProject.csproj",
+        "projectUniqueName": "E:\\dotnet\\dotnet-chatapp\\ShoppingProject.csproj",
         "projectName": "ShoppingProject",
-        "projectPath": "/home/rodrigo0345/dev/dotnet_folder/dotnet-chatapp/ShoppingProject.csproj",
-        "packagesPath": "/home/rodrigo0345/.nuget/packages/",
-        "outputPath": "/home/rodrigo0345/dev/dotnet_folder/dotnet-chatapp/obj/",
+        "projectPath": "E:\\dotnet\\dotnet-chatapp\\ShoppingProject.csproj",
+        "packagesPath": "C:\\Users\\rural\\.nuget\\packages\\",
+        "outputPath": "E:\\dotnet\\dotnet-chatapp\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/rodrigo0345/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\rural\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -114,7 +120,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/rodrigo0345/.asdf/installs/dotnet-core/8.0.101/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

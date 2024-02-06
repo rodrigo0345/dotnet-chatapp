@@ -20,20 +20,20 @@ namespace chatapp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateChatGroup([FromBody] CreateChatGroupDto createChatGroup, CancellationToken ct, ClaimsPrincipal principal)
+        public async Task<IActionResult> CreateChatGroup([FromBody] CreateChatGroupDto createChatGroup, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             if (createChatGroup.OwnerId == null)
             {
-                if (principal.Identity!.Name == null)
+                if (User.Identity!.Name == null)
                 {
                     return BadRequest("Invalid user");
                 }
 
                 // set the owner of the chat group to the user that is logged in
-                createChatGroup.OwnerId = principal.Identity!.Name!;
-                Console.WriteLine($"Your id: {principal.Identity!.Name!}");
+                createChatGroup.OwnerId = User.Identity!.Name!;
+                Console.WriteLine($"Your id: {User.Identity!.Name!}");
             }
 
             var result = await _chatGroupRepository.createOneAsync(createChatGroup, ct);
