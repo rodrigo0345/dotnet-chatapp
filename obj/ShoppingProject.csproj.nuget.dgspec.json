@@ -56,6 +56,10 @@
               "target": "Package",
               "version": "[8.0.1, )"
             },
+            "Microsoft.AspNetCore.Mvc.Testing": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.1, )"
@@ -99,6 +103,10 @@
             "Swashbuckle.AspNetCore.SwaggerUI": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.6.6, )"
             }
           },
           "imports": [

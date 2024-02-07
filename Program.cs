@@ -1,19 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using ShoppingProject.Data;
-using Newtonsoft.Json;
-using ShoppingProject.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using ShoppingProject.Services;
-using Microsoft.OpenApi.Models;
 using ccnd.Interfaces;
 using chatapp.Repositories;
-using chatapp.Models;
-using Microsoft.OpenApi.Any;
-using chatapp.Dtos.Message;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using ShoppingProject.Data;
+using ShoppingProject.Models;
+using ShoppingProject.Services;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,7 +52,7 @@ builder.Services.AddSwaggerGen(option =>
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ITokenService, TokenService>(); 
 
 
 // evita object cycles

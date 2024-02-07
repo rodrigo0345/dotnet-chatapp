@@ -11,10 +11,10 @@ namespace chatapp.Controllers
     [ApiController]
     [Route("api/group")]
     [Authorize]
-    public class ChatGroup : Controller
+    public class ChatGroupController : Controller
     {
         private readonly ChatGroupRepository _chatGroupRepository;
-        public ChatGroup(ChatGroupRepository chatGroupRepository)
+        public ChatGroupController(ChatGroupRepository chatGroupRepository)
         {
             _chatGroupRepository = chatGroupRepository;
         }
@@ -24,7 +24,9 @@ namespace chatapp.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (createChatGroup.OwnerId == null)
+            Console.WriteLine($"Your id: {User.Identity!.Name!}");
+
+            if (String.IsNullOrWhiteSpace(createChatGroup.OwnerId))
             {
                 if (User.Identity!.Name == null)
                 {
@@ -41,7 +43,7 @@ namespace chatapp.Controllers
             {
                 return Ok(result);
             }
-            return StatusCode(500, "It was not possible to create the message");
+            return StatusCode(501, "It was not possible to create the message");
         }
 
         [HttpPut]
@@ -60,7 +62,7 @@ namespace chatapp.Controllers
             {
                 return Ok(result);
             }
-            return StatusCode(500, "It was not possible to update the message");
+            return StatusCode(501, "It was not possible to update the message");
         }
 
         [HttpDelete("{id:guid}")]
@@ -71,7 +73,7 @@ namespace chatapp.Controllers
             {
                 return Ok(result);
             }
-            return StatusCode(500, "It was not possible to delete the message");
+            return StatusCode(501, "It was not possible to delete the message");
         }
 
 
