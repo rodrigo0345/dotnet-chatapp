@@ -21,4 +21,5 @@ export const handleError = (error: any) => {
       toast.warning(err?.data);
     }
   }
+  return error;
 };

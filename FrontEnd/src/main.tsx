@@ -8,12 +8,20 @@ import { ToastContainer } from "react-toastify";
 import { UserProvider } from "./Context/useAuth.tsx";
 import App from "./App.tsx";
 import Login from "./routes/Login.tsx";
+import Chats from "./routes/Chats.tsx";
+import Register from "./routes/Register.tsx";
+import Account from "./routes/Account.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App></App>,
-    children: [{ path: "login", element: <Login /> }],
+    children: [
+      { path: "login", element: <Login /> },
+      { path: "chats", element: <Chats /> },
+      { path: "register", element: <Register /> },
+      { path: "account", element: <Account /> },
+    ],
   },
 ]);
 

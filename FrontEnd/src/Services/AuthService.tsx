@@ -6,10 +6,10 @@ const api = "http://localhost:5100/api";
 export const loginApi = async (username: string, password: string) => {
   try {
     const data = await axios.post<{
-      Id: string;
-      Username: string;
-      Token: string;
-      Email: string;
+      id: string;
+      username: string;
+      token: string;
+      email: string;
     }>(`${api}/account/login`, { username, password });
     return data;
   } catch (e: any) {
@@ -25,13 +25,15 @@ export const registerApi = async (
 ) => {
   try {
     const data = await axios.post<{
-      Username: string;
-      Email: string;
-      Token: string;
-      Id: string;
-    }>(`${api}/account/register`, { email, username, password, bio });
+      username: string;
+      email: string;
+      password: string;
+      id: string;
+    }>(`${api}/account/register`, { email, username, password, bio: "none" });
+    console.log({ data });
     return data;
   } catch (e: any) {
     handleError(e);
+    return e;
   }
 };

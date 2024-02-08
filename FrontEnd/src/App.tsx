@@ -6,10 +6,10 @@ import { Outlet } from "react-router";
 export default function App() {
   return (
     <>
+      <ToastContainer />
       <UserProvider>
         <Header></Header>
         <Outlet />
-        <ToastContainer />
       </UserProvider>
     </>
   );

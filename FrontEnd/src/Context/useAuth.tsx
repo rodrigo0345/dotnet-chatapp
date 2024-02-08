@@ -4,16 +4,12 @@ import { useNavigate } from "react-router";
 import { loginApi, registerApi } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { handleError } from "../helpers/ErrorHandler";
 
 type UserContextType = {
   user: UserProfile | null;
   token: string | null;
-  registerUser: (
-    email: string,
-    username: string,
-    password: string,
-    bio: string
-  ) => void;
+  registerUser: (email: string, username: string, password: string) => void;
   loginUser: (username: string, password: string) => void;
   logout: () => void;
   isLoggedIn: () => boolean;
@@ -45,26 +41,36 @@ export const UserProvider = ({ children }: Props) => {
   const registerUser = async (
     email: string,
     username: string,
-    password: string,
-    bio: string
+    password: string
   ) => {
     try {
-      const response = await registerApi(email, username, password, bio);
-      if (!response) return;
+      const response = await registerApi(email, username, password, "none");
+      if (
+        (response.response && response.response.status == 400) ||
+        response.status == 500
+      ) {
+        toast.error((response.response.data as any)[0].description);
+        return;
+      }
+      if (response.status != 200) {
+        toast.error("Server error, registration failed");
+        return;
+      }
 
       localStorage.setItem("token", response.data.Token);
       const userObj = {
-        id: response.data.Id,
-        username: response.data.Username,
-        email: response.data.Email,
+        id: response.data.id,
+        username: response.data.username,
+        email: response.data.email,
       };
       localStorage.setItem("user", JSON.stringify(userObj));
-      setToken(response.data.Token);
+      setToken(response.data.token);
       setUser(userObj);
       toast.success("Registered successfully");
       navigate("chats");
-    } catch (e) {
-      toast.error("Server error, registration failed");
+    } catch (e: any) {
+      handleError(e);
+      toast.error(e.message);
     }
   };
 
@@ -73,14 +79,14 @@ export const UserProvider = ({ children }: Props) => {
       const response = await loginApi(username, password);
       if (!response) return;
 
-      localStorage.setItem("token", response.data.Token);
+      localStorage.setItem("token", response.data.token);
       const userObj = {
-        id: response.data.Id,
-        username: response.data.Username,
-        email: response.data.Email,
+        id: response.data.id,
+        username: response.data.username,
+        email: response.data.email,
       };
       localStorage.setItem("user", JSON.stringify(userObj));
-      setToken(response.data.Token);
+      setToken(response.data.token);
       setUser(userObj);
       toast.success("Registered successfully");
       navigate("chats");

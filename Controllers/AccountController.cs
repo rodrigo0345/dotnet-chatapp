@@ -45,7 +45,6 @@ namespace ShoppingProject.Controllers
                 {
                     UserName = registerDto.Username,
                     Email = registerDto.Email,
-                    Bio = registerDto.Bio
                 };
 
                 var createUser = await _userManager.CreateAsync(appUser, registerDto.Password!);

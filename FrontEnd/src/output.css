@@ -553,10 +553,6 @@ video {
   margin-bottom: 0.5rem;
 }
 
-.ml-3 {
-  margin-left: 0.75rem;
-}
-
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -569,20 +565,8 @@ video {
   display: flex;
 }
 
-.h-4 {
-  height: 1rem;
-}
-
-.h-5 {
-  height: 1.25rem;
-}
-
 .min-h-6 {
   min-height: 1.5rem;
-}
-
-.w-4 {
-  width: 1rem;
 }
 
 .w-full {
@@ -591,10 +575,6 @@ video {
 
 .flex-col {
   flex-direction: column;
-}
-
-.items-start {
-  align-items: flex-start;
 }
 
 .items-center {
@@ -623,10 +603,6 @@ video {
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
-.rounded {
-  border-radius: 0.25rem;
-}
-
 .rounded-lg {
   border-radius: 0.5rem;
 }
@@ -649,19 +625,14 @@ video {
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
 }
 
-.bg-white {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-green-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(74 222 128 / var(--tw-bg-opacity));
-}
-
 .bg-green-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(22 163 74 / var(--tw-bg-opacity));
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
 .p-2 {
@@ -768,14 +739,14 @@ video {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
-.text-white {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
+}
+
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
 .shadow {
@@ -901,11 +872,6 @@ body{
     background-color: rgb(17 24 39 / var(--tw-bg-opacity));
   }
 
-  .dark\:text-gray-300 {
-    --tw-text-opacity: 1;
-    color: rgb(209 213 219 / var(--tw-text-opacity));
-  }
-
   .dark\:text-gray-400 {
     --tw-text-opacity: 1;
     color: rgb(156 163 175 / var(--tw-text-opacity));
@@ -924,10 +890,6 @@ body{
   .dark\:placeholder-gray-400::placeholder {
     --tw-placeholder-opacity: 1;
     color: rgb(156 163 175 / var(--tw-placeholder-opacity));
-  }
-
-  .dark\:ring-offset-gray-800 {
-    --tw-ring-offset-color: #1f2937;
   }
 
   .dark\:focus\:border-blue-500:focus {
