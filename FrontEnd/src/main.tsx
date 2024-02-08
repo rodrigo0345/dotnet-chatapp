@@ -6,20 +6,19 @@ import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import { ToastContainer } from "react-toastify";
 import { UserProvider } from "./Context/useAuth.tsx";
+import App from "./App.tsx";
+import Login from "./routes/Login.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: "",
+    element: <App></App>,
+    children: [{ path: "login", element: <Login /> }],
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ToastContainer />
-    <UserProvider>
-      <Header></Header>
-      <RouterProvider router={router} />
-    </UserProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

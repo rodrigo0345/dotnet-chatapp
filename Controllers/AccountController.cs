@@ -79,7 +79,6 @@ namespace ShoppingProject.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == login.Username, ct);
 
             if (user == null)
