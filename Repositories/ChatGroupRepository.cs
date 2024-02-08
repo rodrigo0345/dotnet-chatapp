@@ -26,6 +26,14 @@ namespace chatapp.Repositories
 
         public async Task<ChatGroupDto?> createOneAsync(CreateChatGroupDto model, CancellationToken cancellationToken = default)
         {
+            // check if the ownerId exists
+            var foundOwner = await _context.Users.FirstOrDefaultAsync(c => c.Id == model.OwnerId, cancellationToken);
+
+            if(foundOwner == null)
+            {
+                return null;
+            }
+
             var id = Guid.NewGuid();
             _context.ChatGroups.Add(new ChatGroup
             {
@@ -98,7 +106,8 @@ namespace chatapp.Repositories
             {
                 Id = found.Id,
                 Name = found.Name,
-                Logo = found.Logo
+                Logo = found.Logo,
+                OwnerId = found.UserId
             };
         }
 
@@ -108,12 +117,10 @@ namespace chatapp.Repositories
 
             if (found == null) return null;
 
-            _context.ChatGroups.Update(new ChatGroup
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Logo = model.Logo
-            });
+            found.Name = model.Name;
+            found.Logo = model.Logo;
+
+            _context.ChatGroups.Update(found);
             int result = await _context.SaveChangesAsync(cancellationToken);
 
             if (result > 0)

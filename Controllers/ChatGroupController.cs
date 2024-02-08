@@ -26,16 +26,18 @@ namespace chatapp.Controllers
 
             Console.WriteLine($"Your id: {User.Identity!.Name!}");
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (String.IsNullOrWhiteSpace(createChatGroup.OwnerId))
             {
-                if (User.Identity!.Name == null)
+                if (userId == null)
                 {
                     return BadRequest("Invalid user");
                 }
 
                 // set the owner of the chat group to the user that is logged in
-                createChatGroup.OwnerId = User.Identity!.Name!;
-                Console.WriteLine($"Your id: {User.Identity!.Name!}");
+                createChatGroup.OwnerId = userId;
+                Console.WriteLine($"Your id: {userId}");
             }
 
             var result = await _chatGroupRepository.createOneAsync(createChatGroup, ct);
@@ -49,7 +51,7 @@ namespace chatapp.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateChatGroup([FromBody] UpdateChatGroupDto updateChatGroupDto, CancellationToken ct)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState); 
 
             // check for valid id
             if (updateChatGroupDto.Id == Guid.Empty)

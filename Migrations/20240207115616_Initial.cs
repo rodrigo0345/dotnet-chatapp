@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ShoppingProject.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangedDetails : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -242,19 +242,19 @@ namespace ShoppingProject.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "512be3c6-879a-439f-b05e-ab5aadb58abb", null, "User", "USER" },
-                    { "d1819308-b073-430b-82bd-5a199dc3354b", null, "Admin", "ADMIN" }
+                    { "a76978a0-2487-4b5e-890f-b5de8881c8e7", null, "User", "USER" },
+                    { "be8274dd-46a4-44c7-b420-6814e8796d0b", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "Bio", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "68bc2d6a-9b85-4815-bdcd-725a696a05ee", 0, "I am the admin", "73d63e1b-0078-405d-b3ee-fb7450bfc3cb", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAED/QzEwDrn+cBp0y74GDS9eix5I+D2oJx/xhDqNY18jZS+rmrnPUOQUWmjbQ+1OQIQ==", null, false, "01523629-be0a-4bbb-9c3f-a5ec7793dc74", false, "admin" });
+                values: new object[] { "0e6d0733-00dd-4183-8f10-d13353b8cf36", 0, "I am the admin", "dbab47ad-9c91-4917-9863-e2a9057af399", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEGiHEyRIikArqP7W6zfoY/LX6bV1PlmnuqForMeFv4oTiLJDDuKvFR3MDIxpkpIVuw==", null, false, "b5662bc6-63b7-4cb7-808a-b8decf92d08c", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "d1819308-b073-430b-82bd-5a199dc3354b", "68bc2d6a-9b85-4815-bdcd-725a696a05ee" });
+                values: new object[] { "be8274dd-46a4-44c7-b420-6814e8796d0b", "0e6d0733-00dd-4183-8f10-d13353b8cf36" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

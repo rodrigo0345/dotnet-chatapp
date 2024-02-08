@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using ShoppingProject.Data;
 using ShoppingProject.Models;
+using ShoppingProject.Repositories;
 using ShoppingProject.Services;
 using System.Security.Claims;
 
@@ -17,6 +18,7 @@ var config = builder.Configuration;
 builder.Services.AddScoped<MessageRepository>();
 builder.Services.AddScoped<ChatGroupRepository>();
 builder.Services.AddScoped<JoinedChatGroupRepository>();
+builder.Services.AddScoped<UserRepository>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

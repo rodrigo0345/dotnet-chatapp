@@ -674,8 +674,8 @@ E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\refs\System.Xml.XPath.XDocument.dll
 E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\refs\WindowsBase.dll
 E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\Microsoft.AspNetCore.Mvc.Testing.dll
 E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\Microsoft.AspNetCore.TestHost.dll
-E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\xunit.abstractions.dll
-E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\xunit.assert.dll
-E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\xunit.core.dll
-E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\xunit.execution.dotnet.dll
 E:\dotnet\dotnet-chatapp\obj\Debug\net8.0\MvcTestingAppManifest.json
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\FrontEnd\package-lock.json
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\FrontEnd\package.json
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\FrontEnd\tsconfig.json
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\FrontEnd\tsconfig.node.json

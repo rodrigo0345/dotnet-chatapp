@@ -3,6 +3,7 @@ using chatapp.Helpers;
 using chatapp.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingProject.Extensions;
+using System.Security.Claims;
 
 namespace chatapp.Controllers
 {
@@ -12,31 +13,41 @@ namespace chatapp.Controllers
     public class JoinedChatController : Controller
     {
         private readonly JoinedChatGroupRepository _joinedChatGroupRepository;
-        public JoinedChatController(JoinedChatGroupRepository joinedChatGroupRepository)
+        private readonly ChatGroupRepository _chatGroupRepository;
+        public JoinedChatController(JoinedChatGroupRepository joinedChatGroupRepository, ChatGroupRepository chatGroupRepository)
         {
             _joinedChatGroupRepository = joinedChatGroupRepository;
-
+            _chatGroupRepository = chatGroupRepository;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateChat([FromBody] CreateJoinedChatDto create, CancellationToken ct)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var result = await _joinedChatGroupRepository.createOneAsync(create, ct);
-            if (result != null)
-            {
-                return Ok(result);
-            }
-            return StatusCode(500, "It was not possible to create the message");
-        }
-
-        [HttpPost("join")]
         public async Task<IActionResult> JoinChat([FromBody] CreateJoinedChatDto create, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             create.IsAccepted = false;
+            create.UserId = userId;
+
+            // if the user is the owner pass accepted to true
+            var chatgroup = await _chatGroupRepository.getOneAsync(create.ChatGroupId, ct);
+            if(chatgroup == null)
+            {
+                return BadRequest("Chat Group does not exist");
+            }
+
+            if (String.IsNullOrEmpty(chatgroup.OwnerId))
+            {
+                chatgroup.OwnerId = userId;
+            }
+
+            if(chatgroup.OwnerId.ToString() == userId)
+            {
+                create.IsAccepted = true;
+                create.IsAdmin = true;
+            }
+            
 
             var result = await _joinedChatGroupRepository.createOneAsync(create, ct);
             if (result != null)
@@ -60,7 +71,9 @@ namespace chatapp.Controllers
             var request = await _joinedChatGroupRepository.getOwner(updateChatGroupDto.Id, ct);
 
             if (request == null) return BadRequest("Invalid id");
-            if (request!.Id != User.Identity!.Name)
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            if (request!.Id != userId)
             {
                 return BadRequest("You are not the owner of this chat group");
             }

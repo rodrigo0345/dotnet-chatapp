@@ -144,18 +144,18 @@ namespace chatapp.Repositories
 
         public async Task<JoinedChatDto?> updateOneAsync(UpdateJoinedChatDto model, CancellationToken cancellationToken = default)
         {
-            var found = await _context.JoinedChats.FirstOrDefaultAsync(c => c.Id == model.Id, cancellationToken);
+            // bring the chatgroup too
+            
+            var found = await _context.JoinedChats.Include(c => c.ChatGroup).FirstOrDefaultAsync(c => c.Id == model.Id, cancellationToken);
 
             if (found == null) return null;
 
-            _context.JoinedChats.Update(new JoinedChat
-            {
-                Id = model.Id,
-                ChatGroupId = found.ChatGroupId,
-                IsAccepted = model.IsAccepted,
-                IsAdmin = model.IsAdmin,
-                IsBanned = model.IsBanned
-            });
+            found.ChatGroup.User = null!;
+            found.IsAccepted = model.IsAccepted;
+            found.IsBanned = model.IsBanned;
+            found.IsAdmin = model.IsAdmin;
+
+            _context.JoinedChats.Update(found);
 
             int result = await _context.SaveChangesAsync(cancellationToken);
 
@@ -163,11 +163,12 @@ namespace chatapp.Repositories
             {
                 return new JoinedChatDto
                 {
-                    Id = model.Id,
+                    Id = found.Id,
                     ChatGroup = found.ChatGroup,
-                    IsAccepted = model.IsAccepted,
-                    IsAdmin = model.IsAdmin,
-                    IsBanned = model.IsBanned
+                    IsAccepted = found.IsAccepted,
+                    IsAdmin = found.IsAdmin,
+                    IsBanned = found.IsBanned,
+                    UserId = found.UserId
                 };
             }
             return null;
