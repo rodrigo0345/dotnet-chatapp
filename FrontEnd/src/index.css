@@ -10,6 +10,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  min-height: 0;
+  min-width: 0;
+}
+
 body{
   min-height: 100vh;
 }
