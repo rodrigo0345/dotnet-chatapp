@@ -100,7 +100,7 @@ namespace chatapp.Controllers
 
 
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetChatGroup([FromRoute] Guid id, CancellationToken ct)
+        public async Task<IActionResult> GetChatGroup(Guid id, CancellationToken ct)
         {
             var result = await _joinedChatGroupRepository.getOneAsync(id, ct);
             if (result != null)
@@ -110,7 +110,7 @@ namespace chatapp.Controllers
             return StatusCode(500, "It was not possible to get the message");
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<IActionResult> GetChatGroups([FromQuery] JoinedChatQueryObject queryObject, CancellationToken ct)
         {
             var result = await _joinedChatGroupRepository.getAllAsync(queryObject, ct);

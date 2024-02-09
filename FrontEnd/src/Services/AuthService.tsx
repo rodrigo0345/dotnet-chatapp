@@ -1,7 +1,7 @@
 import axios from "axios";
 import { handleError } from "../helpers/ErrorHandler";
 
-const api = "http://localhost:5100/api";
+export const api = "http://localhost:5100/api";
 
 export const loginApi = async (username: string, password: string) => {
   try {
@@ -35,5 +35,14 @@ export const registerApi = async (
   } catch (e: any) {
     handleError(e);
     return e;
+  }
+};
+
+export const logoutApi = async () => {
+  try {
+    const data = await axios.post(`${api}/account/logout`);
+    return data;
+  } catch (e: any) {
+    handleError(e);
   }
 };

@@ -106,6 +106,9 @@ namespace chatapp.Repositories
                 else if (queryObject.FilterBy == "IsBanned")
                 {
                     query = query.Where(m => m.IsBanned == true);
+                } else if (queryObject.FilterBy == "UserId")
+                {
+                    query = query.Where(m => m.UserId == queryObject.FilterValue);
                 }
             }
 

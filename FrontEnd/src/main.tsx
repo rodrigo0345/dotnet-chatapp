@@ -11,6 +11,8 @@ import Login from "./routes/Login.tsx";
 import Chats from "./routes/Chats.tsx";
 import Register from "./routes/Register.tsx";
 import Account from "./routes/Account.tsx";
+import Protected from "./routes/Protected.tsx";
+import { ProtectedRoute } from "./routes/ProtectedRoute.tsx";
 
 const router = createBrowserRouter([
   {
@@ -18,9 +20,19 @@ const router = createBrowserRouter([
     element: <App></App>,
     children: [
       { path: "login", element: <Login /> },
-      { path: "chats", element: <Chats /> },
       { path: "register", element: <Register /> },
-      { path: "account", element: <Account /> },
+      {
+        path: "/",
+        element: (
+          <ProtectedRoute>
+            <Protected />
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: "account", element: <Account /> },
+          { path: "", element: <Chats /> },
+        ],
+      },
     ],
   },
 ]);

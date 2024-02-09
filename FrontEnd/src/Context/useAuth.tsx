@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { UserProfile } from "../Models/User";
 import { useNavigate } from "react-router";
-import { loginApi, registerApi } from "../Services/AuthService";
+import { loginApi, logoutApi, registerApi } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { handleError } from "../helpers/ErrorHandler";
@@ -28,6 +28,7 @@ export const UserProvider = ({ children }: Props) => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    // not safe, I know
     const user = localStorage.getItem("user");
     const token = localStorage.getItem("token");
     if (user && token) {
@@ -57,7 +58,7 @@ export const UserProvider = ({ children }: Props) => {
         return;
       }
 
-      localStorage.setItem("token", response.data.Token);
+      localStorage.setItem("token", response.data.token);
       const userObj = {
         id: response.data.id,
         username: response.data.username,
@@ -67,7 +68,7 @@ export const UserProvider = ({ children }: Props) => {
       setToken(response.data.token);
       setUser(userObj);
       toast.success("Registered successfully");
-      navigate("chats");
+      navigate("/");
     } catch (e: any) {
       handleError(e);
       toast.error(e.message);
@@ -89,7 +90,7 @@ export const UserProvider = ({ children }: Props) => {
       setToken(response.data.token);
       setUser(userObj);
       toast.success("Registered successfully");
-      navigate("chats");
+      navigate("/");
     } catch (e) {
       toast.error("Server error, login failed");
     }
