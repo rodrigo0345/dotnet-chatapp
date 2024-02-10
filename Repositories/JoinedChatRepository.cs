@@ -95,22 +95,28 @@ namespace chatapp.Repositories
 
             if (!String.IsNullOrWhiteSpace(queryObject.FilterBy))
             {
-                if (queryObject.FilterBy == "IsAccepted")
-                {
-                    query = query.Where(m => m.IsAccepted == true);
-                }
-                else if (queryObject.FilterBy == "IsAdmin")
-                {
-                    query = query.Where(m => m.IsAdmin == true);
-                }
-                else if (queryObject.FilterBy == "IsBanned")
-                {
-                    query = query.Where(m => m.IsBanned == true);
-                } else if (queryObject.FilterBy == "UserId")
+                if (queryObject.FilterBy == "UserId")
                 {
                     query = query.Where(m => m.UserId == queryObject.FilterValue);
                 }
             }
+
+            bool value = false;
+            if(queryObject.IsAccepted != null)
+            {
+                bool success = Boolean.TryParse(queryObject.IsAccepted, out value);
+
+                if(success)
+                    query = query.Where(m => m.IsAccepted == value);
+            }   
+            else if(queryObject.IsBanned != null)
+            {
+                bool success = Boolean.TryParse(queryObject.IsBanned, out value);
+
+                if(success)
+                    query = query.Where(m => m.IsBanned== value);
+            }
+
 
             query = query.Skip((queryObject.Page - 1) * queryObject.PageSize).Take(queryObject.PageSize);
 
@@ -141,6 +147,7 @@ namespace chatapp.Repositories
                 ChatGroup = found.ChatGroup,
                 IsAccepted = found.IsAccepted,
                 IsAdmin = found.IsAdmin,
+                UserId = found.UserId,
                 IsBanned = found.IsBanned
             };
         }

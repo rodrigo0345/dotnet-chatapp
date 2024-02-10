@@ -23,10 +23,15 @@ export type ChatGroupProp = {
   isBanned: boolean;
 };
 
-export const getMyChats = async (userId: string) => {
+export const getMyChats = async (userId: string, token: string) => {
   try {
     const data = await axios.get<ChatGroupProp[]>(
-      `${api}/chats?FilterValue=${userId}&FilterBy=UserId`
+      `${api}/chats?FilterValue=${userId}&FilterBy=UserId`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return data;
   } catch (e: any) {
@@ -76,6 +81,91 @@ export const createChat = async (
 
     // Assuming handleError function is correctly defined
     const { request } = handleError(error);
+    return request;
+  }
+};
+
+export const inviteToChat = async (
+  chatGroupId: string,
+  person: string,
+  token: string
+) => {
+  try {
+    const invite = await axios.post<ChatGroupProp>(
+      `${api}/chats/invite`,
+      {
+        chatGroupId,
+        userName: person,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    toast.success("Invited");
+    return invite;
+  } catch (e: any) {
+    const { request } = handleError(e);
+    return request;
+  }
+};
+
+export const getPendentInvites = async (userId: string, token: string) => {
+  try {
+    const data = await axios.get<ChatGroupProp[]>(
+      `${api}/chats?FilterValue=${userId}&FilterBy=UserId&IsAccepted=false`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return data;
+  } catch (e: any) {
+    const { request } = handleError(e);
+    return request;
+  }
+};
+
+export const acceptInvite = async (chatGroup: ChatGroupProp, token: string) => {
+  try {
+    const data = await axios.put<ChatGroupProp>(
+      `${api}/chats`,
+      {
+        id: chatGroup.id,
+        isAccepted: true,
+        isAdmin: false,
+        isBanned: false,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    toast.success(`Joined ${chatGroup.chatGroup.name}`);
+    return data;
+  } catch (e: any) {
+    const { request } = handleError(e);
+    return request;
+  }
+};
+
+export const refuseInvite = async (chatGroup: ChatGroupProp, token: string) => {
+  try {
+    const data = await axios.delete<ChatGroupProp>(
+      `${api}/chats/${chatGroup.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    toast.success(`Refused ${chatGroup.chatGroup.name}`);
+    return data;
+  } catch (e: any) {
+    const { request } = handleError(e);
     return request;
   }
 };

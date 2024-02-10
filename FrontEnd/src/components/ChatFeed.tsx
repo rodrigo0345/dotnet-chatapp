@@ -8,9 +8,16 @@ import {
 import { useAuth } from "../Context/useAuth";
 import Message from "./Message";
 
-export default function ChatFeed(group: ChatGroupProp) {
+export default function ChatFeed({
+  group,
+  messages,
+  setMessages,
+}: {
+  group: ChatGroupProp;
+  messages: MessageResponse[];
+  setMessages: any;
+}) {
   const { getToken } = useAuth();
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
 
   useEffect(() => {
     console.log({ groupId: group.chatGroup.id, token: getToken() });
@@ -19,6 +26,10 @@ export default function ChatFeed(group: ChatGroupProp) {
       if (messages) setMessages(messages.data);
     });
   }, [group]);
+
+  useEffect(() => {
+    console.log({ messages });
+  }, [messages]);
 
   const scrollToBottom = () => {
     const chatFeed = document.getElementById("chat-feed");

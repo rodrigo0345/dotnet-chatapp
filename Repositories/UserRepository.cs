@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShoppingProject.Data;
 using ShoppingProject.Dtos.User;
 using ShoppingProject.Helpers;
+using ShoppingProject.Models;
 
 namespace ShoppingProject.Repositories
 {
@@ -97,6 +98,12 @@ namespace ShoppingProject.Repositories
                 Email = found.Email,
                 Username = found.UserName
             };
+        }
+        
+        public async Task<AppUser?> GetUserByUsernameAsync(string username, CancellationToken ct)
+        {
+            var result = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username, ct);
+            return result;
         }
     }
 }

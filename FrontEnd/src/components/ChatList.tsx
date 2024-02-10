@@ -6,6 +6,7 @@ import { api } from "../Services/AuthService";
 import { useNavigate } from "react-router";
 import { UseFormHandleSubmit } from "react-hook-form";
 import { toast } from "react-toastify";
+import InvitesList from "./InvitesList";
 
 export default function ChatList({
   setMainChat,
@@ -19,7 +20,7 @@ export default function ChatList({
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
 
   useEffect(() => {
-    getMyChats(user?.id ?? "0").then((chats: any) => {
+    getMyChats(user?.id ?? "0", getToken()).then((chats: any) => {
       console.log({ chats });
       setChats(chats.data);
       setMainChat(chats.data[0]);
@@ -46,10 +47,10 @@ export default function ChatList({
   return (
     <div className="p-1 col-span-2 h-full bg-zinc-800 text-white">
       <div className="flex flex-col gap-2 my-2">
-        {chats.length == 0 ? (
+        {chats?.length == 0 && chats ? (
           <div>No chats</div>
         ) : (
-          chats.map((chat: ChatGroupProp) => (
+          chats?.map((chat: ChatGroupProp) => (
             <button
               onClick={() => setMainChat(chat)}
               key={chat.id}
@@ -102,6 +103,7 @@ export default function ChatList({
           </button>
         </form>
       )}
+      <InvitesList />
     </div>
   );
 }

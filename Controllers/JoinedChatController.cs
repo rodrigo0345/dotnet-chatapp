@@ -1,23 +1,27 @@
 using chatapp.Dtos.Message;
 using chatapp.Helpers;
 using chatapp.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShoppingProject.Extensions;
+using ShoppingProject.Dtos.JoinedChat;
+using ShoppingProject.Repositories;
 using System.Security.Claims;
 
 namespace chatapp.Controllers
 {
-
     [ApiController]
     [Route("api/chats")]
+    [Authorize]
     public class JoinedChatController : Controller
     {
         private readonly JoinedChatGroupRepository _joinedChatGroupRepository;
         private readonly ChatGroupRepository _chatGroupRepository;
-        public JoinedChatController(JoinedChatGroupRepository joinedChatGroupRepository, ChatGroupRepository chatGroupRepository)
+        private readonly UserRepository _userRepository;
+        public JoinedChatController(JoinedChatGroupRepository joinedChatGroupRepository, ChatGroupRepository chatGroupRepository, UserRepository userRepository)
         {
             _joinedChatGroupRepository = joinedChatGroupRepository;
             _chatGroupRepository = chatGroupRepository;
+            _userRepository = userRepository;
         }
 
         [HttpPost]
@@ -57,6 +61,40 @@ namespace chatapp.Controllers
             return StatusCode(500, "It was not possible to create the message");
         }
 
+        [HttpPost("invite")]
+        public async Task<IActionResult> InviteUser(InviteToChatDto dto, CancellationToken ct)
+        {
+            // check if the owner of the chatgroup is the user logged in
+            var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (loggedUserId == null) return BadRequest("You are not logged in"); 
+
+            var owner = await _chatGroupRepository.getOwnerAsync(dto.ChatGroupId, ct);
+            var user = await _userRepository.GetUserByUsernameAsync(dto.UserName, ct);
+
+            if(owner == null) return BadRequest("Chat Group does not exist");
+            if(user == null) return BadRequest("User does not exist");
+
+            if(owner!.Id != loggedUserId)
+            {
+                return BadRequest("You are not the owner of this chat group");
+            }
+
+            var joined = new CreateJoinedChatDto
+            {
+                ChatGroupId = dto.ChatGroupId,
+                IsAccepted = false,
+                IsAdmin = false,
+                IsBanned = false,
+                UserId = user.Id
+            };
+
+            var result = await _joinedChatGroupRepository.createOneAsync(joined, ct);
+
+            if(result == null) return BadRequest("It was not possible to invite the user to the chat group");
+
+            return Ok(result);
+        }
+
         // <summary>
         // This method is used to update the status of the user in the chat group
         // Only the admin of the group can update the status of the user
@@ -68,14 +106,15 @@ namespace chatapp.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // verify that the user logged in is the owner of the chat group
-            var request = await _joinedChatGroupRepository.getOwner(updateChatGroupDto.Id, ct);
-
-            if (request == null) return BadRequest("Invalid id");
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            if (request!.Id != userId)
+            var joinedChat = await _joinedChatGroupRepository.getOneAsync(updateChatGroupDto.Id, ct);
+
+            if (joinedChat == null) return BadRequest("Invite does not exist");
+
+            if (joinedChat.UserId != userId)
             {
-                return BadRequest("You are not the owner of this chat group");
+                return BadRequest("This invite is not for you");
             }
 
             var result = await _joinedChatGroupRepository.updateOneAsync(updateChatGroupDto, ct);

@@ -25,8 +25,6 @@ namespace chatapp.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            Console.WriteLine($"Your id: {User.Identity!.Name!}");
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (String.IsNullOrWhiteSpace(createChatGroup.OwnerId))

@@ -11,7 +11,9 @@ export default function App() {
       <ToastContainer />
       <UserProvider>
         <Header></Header>
-        <Outlet />
+        <div className="m-auto max-w-[1024px] margin-auto">
+          <Outlet />
+        </div>
       </UserProvider>
     </>
   );

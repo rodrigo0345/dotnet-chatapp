@@ -12,5 +12,9 @@ namespace chatapp.Helpers
         public bool IsDescending { get; set; } = true;
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
+
+        public string? IsAccepted { get; set; } = null;
+        public string? IsAdmin { get; set; } = null;
+        public string? IsBanned { get; set; } = null;
     }
 }

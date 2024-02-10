@@ -8,7 +8,13 @@ import {
 import { useAuth } from "../Context/useAuth";
 import { toast } from "react-toastify";
 
-export default function CreateMessage(group: ChatGroupProp) {
+export default function CreateMessage({
+  group,
+  setMessages,
+}: {
+  group: ChatGroupProp;
+  setMessages: any;
+}) {
   const { token, user } = useAuth();
   const sendMessageComponent = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,7 +49,7 @@ export default function CreateMessage(group: ChatGroupProp) {
       return;
     }
 
-    const response: MessageResponse = await sendMessage(
+    const { data }: { data: MessageResponse } = await sendMessage(
       {
         chatGroupId: group.chatGroup.id,
         senderId: user?.id,
@@ -54,9 +60,7 @@ export default function CreateMessage(group: ChatGroupProp) {
       JSON.parse(token)
     );
 
-    if (response) {
-      toast.success("Message sent");
-    }
+    setMessages((prev: MessageResponse[]) => [...prev, data]);
 
     e.currentTarget.reset();
   };

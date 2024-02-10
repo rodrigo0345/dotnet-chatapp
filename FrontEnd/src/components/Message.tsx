@@ -48,7 +48,9 @@ export default function Message(message: MessageResponse) {
         )} */}
         <div className="self-end max-w-60 flex flex-col justify-end">
           <div className="bg-blue-500 text-white p-2 rounded-lg rounded-tr-[0] shadow-md py-2 px-3 flex flex-col gap-2">
-            <img src={message.attachment} alt="" className="rounded-lg" />
+            {message.attachment && (
+              <img src={message.attachment} alt="" className="rounded-lg" />
+            )}
             {message.content}
           </div>
           <p className="text-xs self-end font-normal">

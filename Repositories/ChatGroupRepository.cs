@@ -8,6 +8,7 @@ using chatapp.Helpers;
 using chatapp.Models;
 using Microsoft.EntityFrameworkCore;
 using ShoppingProject.Data;
+using ShoppingProject.Models;
 
 namespace chatapp.Repositories
 {
@@ -134,6 +135,16 @@ namespace chatapp.Repositories
                 };
             }
             return null;
+        }
+
+        public async Task<AppUser?> getOwnerAsync(Guid chatGroupId, CancellationToken ct)
+        {
+            if (chatGroupId == Guid.Empty) return null;
+
+            var query = await _context.ChatGroups.AsQueryable().Where(cg => cg.Id == chatGroupId).Select(jc => jc.User).ToListAsync(ct);
+            if (query == null) return null;
+
+            return query.FirstOrDefault()!;
         }
     }
 }

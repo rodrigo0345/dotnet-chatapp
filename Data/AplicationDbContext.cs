@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using chatapp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +29,11 @@ namespace ShoppingProject.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            builder.Entity<JoinedChat>()
+            .HasIndex(p => new { p.ChatGroupId, p.UserId})
+            .IsUnique(true);
+
             base.OnModelCreating(builder);
             List<IdentityRole> roles = [
                 new IdentityRole { Name = Role.Admin.ToString(), NormalizedName = "ADMIN" },
