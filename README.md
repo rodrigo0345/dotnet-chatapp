@@ -1,1 +1,6 @@
-.NET8 - using Identity Core and some structure guidance with examples, hope it helps
+# Roadmap
+
+- Implement SignalR (backend)
+- Invite to chat
+- Fix pagination problem
+- Add webRtc for video calls
