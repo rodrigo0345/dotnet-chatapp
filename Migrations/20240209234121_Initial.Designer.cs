@@ -12,7 +12,7 @@ using ShoppingProject.Data;
 namespace ShoppingProject.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    [Migration("20240207115616_Initial")]
+    [Migration("20240209234121_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -53,13 +53,13 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "be8274dd-46a4-44c7-b420-6814e8796d0b",
+                            Id = "d3249fc1-0c71-43a7-b24b-65380d1c137f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "a76978a0-2487-4b5e-890f-b5de8881c8e7",
+                            Id = "e9fbe2ce-71e2-407b-9973-a30e8ffbaa99",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -154,8 +154,8 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "0e6d0733-00dd-4183-8f10-d13353b8cf36",
-                            RoleId = "be8274dd-46a4-44c7-b420-6814e8796d0b"
+                            UserId = "3de715d7-1d8b-42b7-b59b-4f1ef7488425",
+                            RoleId = "d3249fc1-0c71-43a7-b24b-65380d1c137f"
                         });
                 });
 
@@ -248,18 +248,18 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0e6d0733-00dd-4183-8f10-d13353b8cf36",
+                            Id = "3de715d7-1d8b-42b7-b59b-4f1ef7488425",
                             AccessFailedCount = 0,
                             Bio = "I am the admin",
-                            ConcurrencyStamp = "dbab47ad-9c91-4917-9863-e2a9057af399",
+                            ConcurrencyStamp = "76b6127b-c8ef-4de7-9457-29566ae04c38",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGiHEyRIikArqP7W6zfoY/LX6bV1PlmnuqForMeFv4oTiLJDDuKvFR3MDIxpkpIVuw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEA+rH8AW+AejWm3pk755Zd4xcOUJ2e1WWg55/HbMqmg+iTuohXGgIvKtxUIaK0MDHA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b5662bc6-63b7-4cb7-808a-b8decf92d08c",
+                            SecurityStamp = "e0017374-9b46-4459-9029-5adbc7463aa6",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -339,12 +339,12 @@ namespace ShoppingProject.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedOn")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SenderId1")
+                    b.Property<string>("SenderId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Type")
@@ -354,7 +354,7 @@ namespace ShoppingProject.Migrations
 
                     b.HasIndex("ChatGroupId");
 
-                    b.HasIndex("SenderId1");
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
                 });
@@ -450,7 +450,9 @@ namespace ShoppingProject.Migrations
 
                     b.HasOne("ShoppingProject.Models.AppUser", "Sender")
                         .WithMany()
-                        .HasForeignKey("SenderId1");
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ChatGroup");
 

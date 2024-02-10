@@ -9,7 +9,7 @@ namespace chatapp.Dtos.Message
         public Guid ChatGroupId { get; set; } = Guid.Empty;
 
         [Required(ErrorMessage = "SenderId is required")]
-        public Guid SenderId { get; set; } = Guid.Empty;
+        public string SenderId { get; set; } = String.Empty;
         public string Content { get; set; } = String.Empty;
         public string Attachment { get; set; } = String.Empty;
 

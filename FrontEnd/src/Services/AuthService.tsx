@@ -11,6 +11,7 @@ export const loginApi = async (username: string, password: string) => {
       token: string;
       email: string;
     }>(`${api}/account/login`, { username, password });
+    console.error({ data });
     return data;
   } catch (e: any) {
     handleError(e);
@@ -30,7 +31,6 @@ export const registerApi = async (
       password: string;
       id: string;
     }>(`${api}/account/register`, { email, username, password, bio: "none" });
-    console.log({ data });
     return data;
   } catch (e: any) {
     handleError(e);

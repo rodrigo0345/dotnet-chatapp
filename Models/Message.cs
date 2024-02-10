@@ -24,12 +24,13 @@ namespace chatapp.Models
         public string Content { get; set; } = String.Empty;
         public string Attachment { get; set; } = String.Empty;
         public MessageType Type { get; set; } = MessageType.Text;
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+
+        public DateTime CreatedOn { get; set; } 
 
         public Guid ChatGroupId { get; set; }
         public ChatGroup ChatGroup { get; set; } = null!;
 
-        public Guid SenderId { get; set; }
+        public string SenderId { get; set; } = String.Empty;
         public AppUser Sender { get; set; } = null!;
     }
 }

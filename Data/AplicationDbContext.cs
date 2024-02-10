@@ -29,10 +29,10 @@ namespace ShoppingProject.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            List<IdentityRole> roles = new List<IdentityRole>{
+            List<IdentityRole> roles = [
                 new IdentityRole { Name = Role.Admin.ToString(), NormalizedName = "ADMIN" },
                 new IdentityRole { Name = Role.User.ToString(), NormalizedName = "USER" }
-            };
+            ];
 
             builder.Entity<IdentityRole>().HasData(roles);
 

@@ -95,7 +95,7 @@ namespace chatapp.Repositories
 
         public async Task<ChatGroupDto?> getOneAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var found = await _context.ChatGroups.FindAsync(id, cancellationToken);
+            var found = await _context.ChatGroups.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
             if (found == null)
             {

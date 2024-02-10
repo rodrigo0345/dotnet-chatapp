@@ -91,7 +91,7 @@ namespace chatapp.Repositories
 
         public async Task<List<JoinedChatDto>> getAllAsync(JoinedChatQueryObject queryObject, CancellationToken cancellationToken = default)
         {
-            var query = _context.JoinedChats.AsQueryable();
+            var query = _context.JoinedChats.Include(c => c.ChatGroup).AsQueryable();
 
             if (!String.IsNullOrWhiteSpace(queryObject.FilterBy))
             {

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using chatapp.Dtos.Message;
 using chatapp.Helpers;
 using chatapp.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

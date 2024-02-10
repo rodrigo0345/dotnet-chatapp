@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using chatapp.Dtos.Message;
 using chatapp.Helpers;
 using chatapp.Repositories;
@@ -8,7 +9,7 @@ namespace chatapp.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/message")]
     public class MessageController : Controller
     {
         private readonly MessageRepository _messageRepository;
@@ -21,8 +22,13 @@ namespace chatapp.Controllers
         public async Task<IActionResult> CreateMessage([FromBody] CreateMessageDto dto, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            dto.SenderId = Guid.Parse(User.Identity!.Name!);
+                
+            if(!String.IsNullOrEmpty(dto.SenderId))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null) return BadRequest("User not found");
+                dto.SenderId = userId;
+            }
 
             var result = await _messageRepository.createOneAsync(dto, ct);
             if (result != null)

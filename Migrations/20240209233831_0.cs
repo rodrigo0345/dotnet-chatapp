@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ShoppingProject.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class _0 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -216,19 +216,19 @@ namespace ShoppingProject.Migrations
                     Content = table.Column<string>(type: "text", nullable: false),
                     Attachment = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", rowVersion: true, nullable: false),
                     ChatGroupId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SenderId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SenderId1 = table.Column<string>(type: "text", nullable: true)
+                    SenderId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_SenderId1",
-                        column: x => x.SenderId1,
+                        name: "FK_Messages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Messages_ChatGroups_ChatGroupId",
                         column: x => x.ChatGroupId,
@@ -242,19 +242,19 @@ namespace ShoppingProject.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "a76978a0-2487-4b5e-890f-b5de8881c8e7", null, "User", "USER" },
-                    { "be8274dd-46a4-44c7-b420-6814e8796d0b", null, "Admin", "ADMIN" }
+                    { "8ae562fa-6dd5-45fa-adc2-396e7241845f", null, "User", "USER" },
+                    { "94d9820c-21b8-4382-b739-f2179e99e1cc", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "Bio", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "0e6d0733-00dd-4183-8f10-d13353b8cf36", 0, "I am the admin", "dbab47ad-9c91-4917-9863-e2a9057af399", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEGiHEyRIikArqP7W6zfoY/LX6bV1PlmnuqForMeFv4oTiLJDDuKvFR3MDIxpkpIVuw==", null, false, "b5662bc6-63b7-4cb7-808a-b8decf92d08c", false, "admin" });
+                values: new object[] { "cdbd8300-c873-455b-9bbd-5243b4349be4", 0, "I am the admin", "348e89f8-4a97-48c3-9fd8-add7d04385db", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEP2v/k9+lx+i1y/E+X5S+6U6meZEw8Sqp++B+OGQvRrqGvZFLJCfcuC3wv+K2035Cw==", null, false, "5cd978fd-e2e6-4592-a23f-d0cb9a50b78b", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "be8274dd-46a4-44c7-b420-6814e8796d0b", "0e6d0733-00dd-4183-8f10-d13353b8cf36" });
+                values: new object[] { "94d9820c-21b8-4382-b739-f2179e99e1cc", "cdbd8300-c873-455b-9bbd-5243b4349be4" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -314,9 +314,9 @@ namespace ShoppingProject.Migrations
                 column: "ChatGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_SenderId1",
+                name: "IX_Messages_SenderId",
                 table: "Messages",
-                column: "SenderId1");
+                column: "SenderId");
         }
 
         /// <inheritdoc />

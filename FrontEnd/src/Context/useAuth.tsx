@@ -13,6 +13,7 @@ type UserContextType = {
   loginUser: (username: string, password: string) => void;
   logout: () => void;
   isLoggedIn: () => boolean;
+  getToken: () => string;
 };
 
 type Props = {
@@ -80,14 +81,14 @@ export const UserProvider = ({ children }: Props) => {
       const response = await loginApi(username, password);
       if (!response) return;
 
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", JSON.stringify(response.data.token));
       const userObj = {
         id: response.data.id,
         username: response.data.username,
         email: response.data.email,
       };
       localStorage.setItem("user", JSON.stringify(userObj));
-      setToken(response.data.token);
+      setToken(JSON.stringify(response.data.token));
       setUser(userObj);
       toast.success("Registered successfully");
       navigate("/");
@@ -108,9 +109,21 @@ export const UserProvider = ({ children }: Props) => {
     navigate("/");
   };
 
+  const getToken = () => {
+    return JSON.parse(token as string);
+  };
+
   return (
     <UserContext.Provider
-      value={{ user, token, registerUser, loginUser, logout, isLoggedIn }}
+      value={{
+        user,
+        token,
+        registerUser,
+        loginUser,
+        logout,
+        isLoggedIn,
+        getToken,
+      }}
     >
       {isReady && children}
     </UserContext.Provider>

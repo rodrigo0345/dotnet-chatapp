@@ -8,6 +8,7 @@ using chatapp.Helpers;
 using chatapp.Models;
 using Microsoft.EntityFrameworkCore;
 using ShoppingProject.Data;
+using ShoppingProject.Helpers;
 
 namespace chatapp.Repositories
 {
@@ -26,6 +27,18 @@ namespace chatapp.Repositories
 
         public async Task<MessageDto?> createOneAsync(CreateMessageDto model, CancellationToken cancellationToken = default)
         {
+            var foundGroup = await _context.ChatGroups.AsNoTracking().FirstOrDefaultAsync(c => c.Id == model.ChatGroupId);
+            if(foundGroup == null)
+            {
+                return null;
+            }
+
+            var foundUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(c => c.Id == model.SenderId);
+            if(foundUser == null)
+            {
+                return null;
+            }
+
             var id = Guid.NewGuid();
             _context.Messages.Add(new Message
             {
@@ -34,7 +47,8 @@ namespace chatapp.Repositories
                 Attachment = model.Attachment,
                 SenderId = model.SenderId,
                 ChatGroupId = model.ChatGroupId,
-                Type = model.Type
+                Type = model.Type,
+                CreatedOn = DateTime.UtcNow
             });
             int result = await _context.SaveChangesAsync(cancellationToken);
 
@@ -78,18 +92,21 @@ namespace chatapp.Repositories
             var query = _context.Messages.AsQueryable();
 
             // needs to specfify the chat group id
-            query = query.Where(m => m.ChatGroupId == queryObject.ChatGroupId);
+            query = query.Include(x => x.Sender).Where(m => m.ChatGroupId == queryObject.ChatGroupId);
 
             if (queryObject.Type != null)
             {
                 query = query.Where(m => m.Type == queryObject.Type);
             }
 
-            if (queryObject.FilterBy != null)
+            if (!String.IsNullOrWhiteSpace(queryObject.FilterBy))
                 switch (queryObject.FilterBy)
                 {
                     case "SenderId":
                         query = query.Where(m => m.SenderId.ToString() == queryObject.FilterValue);
+                        break;
+                    case "ChatGroupId":
+                        query = query.Where(m => m.ChatGroupId.ToString() == queryObject.FilterValue);
                         break;
                 }
 
@@ -116,15 +133,16 @@ namespace chatapp.Repositories
                 CreatedOn = m.CreatedOn,
                 Type = m.Type,
                 ChatGroupId = m.ChatGroupId,
-                SenderId = m.SenderId
-            });
+                SenderId = m.SenderId,
+                Sender = m.Sender.UserToUserDto()
+            }); ;
 
             return result.ToList();
         }
 
         public async Task<MessageDto?> getOneAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var found = await _context.Messages.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+            var found = await _context.Messages.Include(x => x.Sender).FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
             if (found == null)
             {
@@ -139,7 +157,8 @@ namespace chatapp.Repositories
                 CreatedOn = found.CreatedOn,
                 Type = found.Type,
                 ChatGroupId = found.ChatGroupId,
-                SenderId = found.SenderId
+                SenderId = found.SenderId,
+                Sender = found.Sender.UserToUserDto()
             };
         }
 

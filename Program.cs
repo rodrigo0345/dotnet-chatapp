@@ -113,15 +113,16 @@ builder.Services.AddCors(options =>
                {
                    builder.AllowAnyOrigin()
                    .AllowAnyHeader()
-                   .AllowAnyMethod();
+                   .AllowAnyMethod()
+                   .WithExposedHeaders("Content-Type");
                });
 });
 
 
 var app = builder.Build();
 
+app.UseCors(); 
 app.MapControllers();
-app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -131,13 +132,13 @@ if (app.Environment.IsDevelopment())
         options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            options.RoutePrefix = string.Empty;
             options.DisplayRequestDuration();
         }
     );
 }
 
-app.UseHttpsRedirection();
+// está a lixar o frontend todo
+// app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

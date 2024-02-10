@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShoppingProject.Data;
@@ -11,9 +12,11 @@ using ShoppingProject.Data;
 namespace ShoppingProject.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240209233831_0")]
+    partial class _0
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,13 +53,13 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4b303157-b299-4965-9dce-5fa836754bcf",
+                            Id = "94d9820c-21b8-4382-b739-f2179e99e1cc",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "c55ce138-0614-4612-a8a8-2106e2ee49af",
+                            Id = "8ae562fa-6dd5-45fa-adc2-396e7241845f",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -151,8 +154,8 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "8499de37-0c18-46a8-a1d6-556c4ba7e8d5",
-                            RoleId = "4b303157-b299-4965-9dce-5fa836754bcf"
+                            UserId = "cdbd8300-c873-455b-9bbd-5243b4349be4",
+                            RoleId = "94d9820c-21b8-4382-b739-f2179e99e1cc"
                         });
                 });
 
@@ -245,18 +248,18 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8499de37-0c18-46a8-a1d6-556c4ba7e8d5",
+                            Id = "cdbd8300-c873-455b-9bbd-5243b4349be4",
                             AccessFailedCount = 0,
                             Bio = "I am the admin",
-                            ConcurrencyStamp = "588ec5fe-1e54-47d3-9903-e470a77bac62",
+                            ConcurrencyStamp = "348e89f8-4a97-48c3-9fd8-add7d04385db",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOoYcSIE9L6f2Li0egNGy4b61dZqz4M/Ynso6K1fCTl+G2pKdNfnjGFZh6lyeN1z9A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP2v/k9+lx+i1y/E+X5S+6U6meZEw8Sqp++B+OGQvRrqGvZFLJCfcuC3wv+K2035Cw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "274bc3b6-4d7b-4fda-86b7-5c11eeed4bf5",
+                            SecurityStamp = "5cd978fd-e2e6-4592-a23f-d0cb9a50b78b",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -336,6 +339,8 @@ namespace ShoppingProject.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedOn")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SenderId")
