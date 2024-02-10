@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using ShoppingProject.Controllers;
 using ShoppingProject.Data;
 using ShoppingProject.Models;
 using ShoppingProject.Repositories;
@@ -19,6 +20,8 @@ builder.Services.AddScoped<MessageRepository>();
 builder.Services.AddScoped<ChatGroupRepository>();
 builder.Services.AddScoped<JoinedChatGroupRepository>();
 builder.Services.AddScoped<UserRepository>();
+
+builder.Services.AddSignalR();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -111,15 +114,18 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
                builder =>
                {
-                   builder.AllowAnyOrigin()
+                   builder.WithOrigins("http://localhost:5173")
                    .AllowAnyHeader()
                    .AllowAnyMethod()
-                   .WithExposedHeaders("Content-Type");
+                   .SetIsOriginAllowedToAllowWildcardSubdomains()
+                   .AllowCredentials();
                });
 });
 
 
 var app = builder.Build();
+
+app.MapHub<ChatHub>("realtime_chat");
 
 app.UseCors(); 
 app.MapControllers();

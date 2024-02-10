@@ -4,6 +4,7 @@ import {
   MessageResponse,
   getChatMessages,
   getMyChats,
+  joinChatRoom,
 } from "../Services/ChatService";
 import { useAuth } from "../Context/useAuth";
 import Message from "./Message";
@@ -17,7 +18,7 @@ export default function ChatFeed({
   messages: MessageResponse[];
   setMessages: any;
 }) {
-  const { getToken } = useAuth();
+  const { getToken, user } = useAuth();
 
   useEffect(() => {
     console.log({ groupId: group.chatGroup.id, token: getToken() });
@@ -25,6 +26,7 @@ export default function ChatFeed({
       console.log({ messages });
       if (messages) setMessages(messages.data);
     });
+    joinChatRoom(group.chatGroup.id, user?.id ?? "0", getToken(), setMessages);
   }, [group]);
 
   useEffect(() => {

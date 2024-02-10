@@ -7,7 +7,7 @@ export default function Invite({
 }: {
   chatGroup: ChatGroupProp | null;
 }) {
-  const { getToken } = useAuth();
+  const { getToken, user } = useAuth();
   const inviteFriend = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -19,6 +19,10 @@ export default function Invite({
     // send invite
     await inviteToChat(chatGroupId, friend.toString(), getToken());
   };
+
+  if (chatGroup?.chatGroup.userId != user?.id) {
+    return <div></div>;
+  }
   return (
     <div className="flex flex-col items-center justify-center h-full relative">
       <form

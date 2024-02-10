@@ -2,6 +2,7 @@ import axios from "axios";
 import { handleError } from "../helpers/ErrorHandler";
 import { api } from "./AuthService";
 import { toast } from "react-toastify";
+import * as signalR from "@microsoft/signalr";
 
 export type ChatProp = {
   id: string;
@@ -235,5 +236,57 @@ export const sendMessage = async (message: Message, userToken: string) => {
   } catch (e: any) {
     const { request } = handleError(e);
     return request;
+  }
+};
+
+// REALTIME CHAT functionality
+
+export const joinChatRoom = async (
+  chatGroupId: string,
+  userId: string,
+  userToken: string,
+  setMessages: any
+) => {
+  const connection = new signalR.HubConnectionBuilder()
+    .withUrl(`${api}/realtime_chat`, {
+      accessTokenFactory: () => userToken, // Add this line if you have authentication
+      skipNegotiation: true,
+      transport: signalR.HttpTransportType.WebSockets,
+    })
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
+
+  connection.on("ReceiveMessage", (message: MessageResponse) => {
+    if (message.senderId === userId) return;
+    setMessages((prev: MessageResponse[]) => [...prev, message]);
+  });
+
+  try {
+    await connection.start();
+    await connection.invoke("JoinChat", userId, chatGroupId);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const leaveChatRoom = async (
+  chatGroupId: string,
+  userId: string,
+  userToken: string
+) => {
+  const connection = new signalR.HubConnectionBuilder()
+    .withUrl(`${api}/realtime_chat`, {
+      accessTokenFactory: () => userToken, // Add this line if you have authentication
+      skipNegotiation: true,
+      transport: signalR.HttpTransportType.WebSockets,
+    })
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
+
+  try {
+    await connection.start();
+    await connection.invoke("LeaveChat", userId, chatGroupId);
+  } catch (e) {
+    console.error(e);
   }
 };

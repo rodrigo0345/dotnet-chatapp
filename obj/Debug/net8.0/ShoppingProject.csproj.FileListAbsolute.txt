@@ -679,3 +679,11 @@ E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\FrontEnd\package-lock.json
 E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\FrontEnd\package.json
 E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\FrontEnd\tsconfig.json
 E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\FrontEnd\tsconfig.node.json
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\package-lock.json
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\package.json
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\Microsoft.AspNet.SignalR.Core.dll
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\Microsoft.AspNet.SignalR.SystemWeb.dll
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\Microsoft.Owin.dll
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\Microsoft.Owin.Host.SystemWeb.dll
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\Microsoft.Owin.Security.dll
+E:\dotnet\dotnet-chatapp\bin\Debug\net8.0\Owin.dll
