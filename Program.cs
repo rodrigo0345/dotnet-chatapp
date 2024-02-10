@@ -21,7 +21,10 @@ builder.Services.AddScoped<ChatGroupRepository>();
 builder.Services.AddScoped<JoinedChatGroupRepository>();
 builder.Services.AddScoped<UserRepository>();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -125,7 +128,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.MapHub<ChatHub>("realtime_chat");
 
 app.UseCors(); 
 app.MapControllers();
@@ -148,5 +150,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<ChatHub>("/api/chatHub");
 
 app.Run();

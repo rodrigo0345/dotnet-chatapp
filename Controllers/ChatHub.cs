@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace ShoppingProject.Controllers
 {
-    public class ChatHub: Hub
+    public class ChatHub: Hub 
     {
         public async Task JoinChat(string userId, Guid chatId)
         {

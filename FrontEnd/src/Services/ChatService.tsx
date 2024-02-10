@@ -248,12 +248,11 @@ export const joinChatRoom = async (
   setMessages: any
 ) => {
   const connection = new signalR.HubConnectionBuilder()
-    .withUrl(`${api}/realtime_chat`, {
-      accessTokenFactory: () => userToken, // Add this line if you have authentication
+    .withUrl(`${api}/chatHub`, {
       skipNegotiation: true,
       transport: signalR.HttpTransportType.WebSockets,
     })
-    .configureLogging(signalR.LogLevel.Information)
+    .configureLogging(signalR.LogLevel.Debug)
     .build();
 
   connection.on("ReceiveMessage", (message: MessageResponse) => {
@@ -275,12 +274,11 @@ export const leaveChatRoom = async (
   userToken: string
 ) => {
   const connection = new signalR.HubConnectionBuilder()
-    .withUrl(`${api}/realtime_chat`, {
-      accessTokenFactory: () => userToken, // Add this line if you have authentication
+    .withUrl(`${api}/chatHub`, {
       skipNegotiation: true,
       transport: signalR.HttpTransportType.WebSockets,
     })
-    .configureLogging(signalR.LogLevel.Information)
+    .configureLogging(signalR.LogLevel.Debug)
     .build();
 
   try {

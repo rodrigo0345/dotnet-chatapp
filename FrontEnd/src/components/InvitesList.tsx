@@ -27,7 +27,7 @@ export default function InvitesList() {
     getInvites().then((invites) => {
       setInvites(invites.data);
     });
-  });
+  }, []);
 
   return (
     <section>
