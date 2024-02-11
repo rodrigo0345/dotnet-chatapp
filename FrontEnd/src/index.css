@@ -2,12 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Rubik+Broken+Fax&family=Workbench&display=swap');
+
 :root {
   min-width: none;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --full-viewport-height: 100vh;
 }
 
 * {
@@ -16,5 +19,5 @@
 }
 
 body{
-  max-height: 100vh;
+  max-height: var(--full-viewport-height);
 }

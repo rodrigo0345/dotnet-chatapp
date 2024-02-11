@@ -5,7 +5,13 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily:{
+        customFont: ['Montserrat', 'sans-serif'],
+        display: ["'Workbench'", 'sans-serif'],
+        rubik: ["'Rubik Broken Fax'", 'system-ui'],
+      }
+    },
   },
   plugins: [],
 }

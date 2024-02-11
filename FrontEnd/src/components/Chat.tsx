@@ -1,35 +1,26 @@
 import { useEffect, useState } from "react";
-import { ChatGroupProp, MessageResponse } from "../Services/ChatService";
+import { ChatService, MessageType } from "../Services/ChatService";
 import ChatFeed from "./ChatFeed";
 import CreateMessage from "./CreateMessage";
 import { set } from "react-hook-form";
 import Invite from "./Invite";
 import * as signalR from "@microsoft/signalr";
 import { api } from "../Services/AuthService";
+import { InviteToChatType, UserService } from "../Services/UserService";
+import { useAuth } from "../Context/useAuth";
 
 export default function Chat({
-  mainChat,
+  selectedChat,
+  chatService,
+  userService,
 }: {
-  mainChat?: ChatGroupProp | null;
+  selectedChat: InviteToChatType;
+  chatService: ChatService;
+  userService: UserService;
 }) {
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
-  const [connection, setConnection] = useState<signalR.HubConnection>(
-    new signalR.HubConnectionBuilder()
-      .withUrl(`${api}/chatHub`, {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets,
-      })
-      .configureLogging(signalR.LogLevel.Information)
-      .build()
-  );
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
-  useEffect(() => {
-    connection.start().then(() => {
-      console.log("connected");
-    });
-  }, []);
-
-  if (mainChat === null) {
+  if (selectedChat === null) {
     return (
       <div className="flex h-full w-full justify-center items-center">
         <h1 className="animate-ping">Loading...</h1>
@@ -38,30 +29,37 @@ export default function Chat({
   }
   return (
     <>
-      {mainChat && (
-        <div className="col-span-4 h-fit relative flex flex-col">
-          <section className="flex gap-2 w-full bg-gray-700 text-white p-4 justify-around align-middle items-center">
+      {selectedChat && (
+        <div className="col-span-4 h-full relative flex flex-col">
+          <section className="flex gap-2 w-full text-white p-4 justify-between px-6 align-middle items-center">
             <div className="flex items-center gap-2">
               <img
-                src={mainChat.chatGroup.logo}
+                src={selectedChat.chatGroup.logo}
                 alt="group photo"
                 className="w-10 h-10 rounded-full object-cover object-center"
               />
-              <h1 className="font-normal text-lg">{mainChat.chatGroup.name}</h1>
+              <h1 className="font-normal text-lg">
+                {selectedChat.chatGroup.name}
+              </h1>
             </div>
-            <Invite chatGroup={mainChat}></Invite>
+            <Invite
+              chatService={chatService}
+              userService={userService}
+              chatGroup={selectedChat}
+            ></Invite>
           </section>
           <ChatFeed
             messages={messages}
             setMessages={setMessages}
-            group={mainChat}
-            connection={connection}
+            group={selectedChat}
+            chatService={chatService}
+            userService={userService}
           ></ChatFeed>
           <CreateMessage
-            group={mainChat}
+            group={selectedChat}
             setMessages={setMessages}
-            {...mainChat}
-            connection={connection}
+            chatService={chatService}
+            userService={userService}
           ></CreateMessage>
         </div>
       )}

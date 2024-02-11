@@ -1,30 +1,27 @@
 import { FormHTMLAttributes, useEffect, useState } from "react";
-import { ChatGroupProp, createChat, getMyChats } from "../Services/ChatService";
 import { useAuth } from "../Context/useAuth";
-import { ChatProp } from "../Services/ChatService";
 import { api } from "../Services/AuthService";
 import { useNavigate } from "react-router";
 import { UseFormHandleSubmit } from "react-hook-form";
 import { toast } from "react-toastify";
 import InvitesList from "./InvitesList";
+import { InviteToChatType, UserService } from "../Services/UserService";
+import { ChatService } from "../Services/ChatService";
 
 export default function ChatList({
-  setMainChat,
-  mainChat,
+  setSelectedChat,
+  selectedChat,
+  chatService,
+  userService,
+  allChats,
 }: {
-  setMainChat: (chat: ChatGroupProp) => void;
-  mainChat: ChatGroupProp | null;
+  setSelectedChat: (chat: InviteToChatType) => void;
+  selectedChat: InviteToChatType | null;
+  chatService: ChatService;
+  userService: UserService;
+  allChats: InviteToChatType[];
 }) {
-  const { user, getToken } = useAuth();
-  const [chats, setChats] = useState<ChatGroupProp[]>([]);
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
-
-  useEffect(() => {
-    getMyChats(user?.id ?? "0", getToken()).then((chats: any) => {
-      setChats(chats.data);
-      setMainChat(chats.data[0]);
-    });
-  }, []);
 
   const createChatModule = async (formData: FormData) => {
     const name = formData.get("name")?.toString();
@@ -32,29 +29,36 @@ export default function ChatList({
 
     if (!name || !logo) return toast.error("Name and logo are required");
 
-    const token = getToken();
-
-    if (!token) return toast.error("You are not logged in");
-    console.warn({ token });
-
-    const data = await createChat(name, logo, token);
+    await userService.createChat(name, logo);
 
     setIsNewChatModalOpen(false);
-    setChats((prev) => [...prev, data.data]);
   };
 
   return (
-    <div className="p-1 col-span-2 h-full bg-zinc-800 text-white">
-      <div className="flex flex-col gap-2 my-2">
-        {chats?.length == 0 && chats ? (
+    <div className="p-4 col-span-2 h-full bg-zinc-950/30 backdrop-blur-lg  text-white m-2 rounded-md border border-slate-700/80">
+      <div className="flex flex-col gap-2 my-2 ">
+        <div className="w-full">
+          <h1 className="text-2xl font-rubik">Hash</h1>
+        </div>
+        <section
+          id="search-chats"
+          className="flex rounded-xl px-2 py-1 bg-slate-900"
+        >
+          <input
+            type="text"
+            className="text-sm text-black outline-none bg-transparent"
+            placeholder="Search chats"
+          />
+        </section>
+        {allChats?.length == 0 && allChats ? (
           <div>No chats</div>
         ) : (
-          chats?.map((chat: ChatGroupProp) => (
+          allChats?.map((chat: InviteToChatType) => (
             <button
-              onClick={() => setMainChat(chat)}
+              onClick={() => setSelectedChat(chat)}
               key={chat.id}
               className={`${
-                mainChat?.id == chat.id ? "bg-gray-500" : "bg-gray-700"
+                selectedChat?.id == chat.id ? "bg-gray-500" : "bg-gray-700"
               } text-sm py-1 px-2 flex gap-1`}
             >
               <img
@@ -102,7 +106,7 @@ export default function ChatList({
           </button>
         </form>
       )}
-      <InvitesList />
+      <InvitesList chatService={chatService} userService={userService} />
     </div>
   );
 }

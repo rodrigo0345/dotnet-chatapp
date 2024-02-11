@@ -1,198 +1,11 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { handleError } from "../helpers/ErrorHandler";
 import { api } from "./AuthService";
 import { toast } from "react-toastify";
 import * as signalR from "@microsoft/signalr";
+import { InviteToChatType } from "./UserService";
 
-export type ChatProp = {
-  id: string;
-  name: string;
-  logo: string;
-  ownerId: string;
-};
-
-export type ChatGroupProp = {
-  id: string;
-  chatGroup: {
-    id: string;
-    name: string;
-    logo: string;
-    userId: string;
-  };
-  isAccepted: boolean;
-  isAdmin: boolean;
-  isBanned: boolean;
-};
-
-export const getMyChats = async (userId: string, token: string) => {
-  try {
-    const data = await axios.get<ChatGroupProp[]>(
-      `${api}/chats?FilterValue=${userId}&FilterBy=UserId`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return data;
-  } catch (e: any) {
-    const { request } = handleError(e);
-    return request;
-  }
-};
-
-export const createChat = async (
-  chatName: string,
-  chatLogo: string,
-  userToken: string
-) => {
-  try {
-    // create it
-    const data = await axios.post<ChatProp>(
-      `${api}/group`,
-      {
-        name: chatName,
-        logo: chatLogo,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
-    );
-    // now join it
-    const joinData = await axios.post<ChatGroupProp>(
-      `${api}/chats`,
-      {
-        chatGroupId: data.data.id,
-        isAccepted: true,
-        isAdmin: true,
-        isBanned: false,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
-    );
-    toast.success("Chat created");
-    return joinData;
-  } catch (error) {
-    console.error(error);
-
-    // Assuming handleError function is correctly defined
-    const { request } = handleError(error);
-    return request;
-  }
-};
-
-export const inviteToChat = async (
-  chatGroupId: string,
-  person: string,
-  token: string
-) => {
-  try {
-    const invite = await axios.post<ChatGroupProp>(
-      `${api}/chats/invite`,
-      {
-        chatGroupId,
-        userName: person,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    toast.success("Invited");
-    return invite;
-  } catch (e: any) {
-    const { request } = handleError(e);
-    return request;
-  }
-};
-
-export const getPendentInvites = async (userId: string, token: string) => {
-  try {
-    const data = await axios.get<ChatGroupProp[]>(
-      `${api}/chats?FilterValue=${userId}&FilterBy=UserId&IsAccepted=false`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return data;
-  } catch (e: any) {
-    const { request } = handleError(e);
-    return request;
-  }
-};
-
-export const acceptInvite = async (chatGroup: ChatGroupProp, token: string) => {
-  try {
-    const data = await axios.put<ChatGroupProp>(
-      `${api}/chats`,
-      {
-        id: chatGroup.id,
-        isAccepted: true,
-        isAdmin: false,
-        isBanned: false,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    toast.success(`Joined ${chatGroup.chatGroup.name}`);
-    return data;
-  } catch (e: any) {
-    const { request } = handleError(e);
-    return request;
-  }
-};
-
-export const refuseInvite = async (chatGroup: ChatGroupProp, token: string) => {
-  try {
-    const data = await axios.delete<ChatGroupProp>(
-      `${api}/chats/${chatGroup.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    toast.success(`Refused ${chatGroup.chatGroup.name}`);
-    return data;
-  } catch (e: any) {
-    const { request } = handleError(e);
-    return request;
-  }
-};
-
-export const getChatMessages = async (
-  chatId: string,
-  userToken: string,
-  pageNumber: number = 1
-) => {
-  try {
-    const data = await axios.get(
-      `${api}/message?FilterValue=${chatId}&FilterBy='ChatGroupId'&ChatGroupId=${chatId}&IsDescending=false&PageSize=10&PageNumber=${pageNumber}`,
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
-    );
-    return data;
-  } catch (e: any) {
-    const { request } = handleError(e);
-    return request;
-  }
-};
-
-export enum MessageType {
+export enum MessageEnum {
   Text = 0,
   Image = 1,
   Video = 2,
@@ -200,15 +13,15 @@ export enum MessageType {
   File = 4,
 }
 
-export type Message = {
+export type MessageCreateType = {
   chatGroupId: string;
   senderId: string;
   content: string;
   attachment: string;
-  type: MessageType;
+  type: MessageEnum;
 };
 
-export type MessageResponse = {
+export type MessageType = {
   attachment: string;
   chatGroupId: string;
   content: string;
@@ -225,60 +38,115 @@ export type MessageResponse = {
   };
 };
 
-export const sendMessage = async (
-  message: Message,
-  userToken: string,
-  connection: signalR.HubConnection
-) => {
-  await connection
-    .invoke("SendMessage", message)
-    .then(() => console.log("Message sent"))
-    .catch((e) => console.error(e));
-  //   try {
-  //     const data = await axios.post<MessageResponse>(`${api}/message`, message, {
-  //       headers: {
-  //         Authorization: `Bearer ${userToken}`,
-  //       },
-  //     });
-  //     return data;
-  //   } catch (e: any) {
-  //     const { request } = handleError(e);
-  //     return request;
-  //   }
-};
+export class ChatService {
+  connection: signalR.HubConnection;
 
-// REALTIME CHAT functionality
+  _token: string;
+  _isListening = false;
+  _serverUrl: string;
+  _userId: string;
 
-export const joinChatRoom = async (
-  chatGroupId: string,
-  userId: string,
-  userToken: string,
-  setMessages: any,
-  connection: signalR.HubConnection
-) => {
-  console.log("Joining chat room", { chatGroupId }, { userId }, userToken);
-  connection.on("ReceiveMessage", (message: MessageResponse) => {
-    console.log("Received message", message);
-    setMessages((prev: MessageResponse[]) => [...prev, message]);
-  });
-
-  try {
-    await connection.invoke("JoinChat", userId, chatGroupId);
-  } catch (e) {
-    console.error(e);
+  constructor(
+    userId: string,
+    token: string,
+    serverUrl: string = "http://localhost:5100/api"
+  ) {
+    this.connection = new signalR.HubConnectionBuilder()
+      .withUrl(`${serverUrl}/chatHub`, {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets,
+      })
+      .withAutomaticReconnect()
+      .build();
+    this._token = token;
+    this._serverUrl = serverUrl;
+    this._userId = userId;
   }
-};
 
-export const leaveChatRoom = async (
-  chatGroupId: string,
-  userId: string,
-  userToken: string,
-  connection: signalR.HubConnection
-) => {
-  try {
-    await connection.start();
-    await connection.invoke("LeaveChat", userId, chatGroupId);
-  } catch (e) {
-    console.error(e);
-  }
-};
+  getChatMessages = async (
+    chatId: string,
+    pageNumber: number = 1
+  ): Promise<AxiosResponse<MessageType[], any>> => {
+    try {
+      const data = await axios.get<MessageType[]>(
+        `${api}/message?FilterValue=${chatId}&FilterBy='ChatGroupId'&ChatGroupId=${chatId}&IsDescending=true&PageSize=10&PageNumber=${pageNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this._token}`,
+          },
+        }
+      );
+      return data;
+    } catch (e: any) {
+      const { request } = handleError(e);
+      return request;
+    }
+  };
+
+  sendMessage = async (message: MessageCreateType) => {
+    if (!this.connection.state) await this.connection.start();
+    try {
+      message.senderId = this._userId;
+      await this.connection.invoke("SendMessage", message);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  joinChatRoom = async (chatGroupId: string, setMessages: any) => {
+    if (this._isListening) return;
+
+    console.log({ chatGroupId });
+
+    try {
+      await this.connection.start();
+    } catch (e) {
+      console.error(e);
+    }
+
+    this.connection.on("ReceiveMessage", (message: MessageType) => {
+      setMessages((prev: MessageType[]) => {
+        if (prev.some((m) => m.id === message.id)) {
+          return prev;
+        }
+        return [...prev, message];
+      });
+    });
+
+    try {
+      await this.connection.invoke("JoinChat", this._userId, chatGroupId);
+      this._isListening = true;
+    } catch (e) {}
+  };
+
+  leaveChatRoom = async (chatGroupId: string) => {
+    try {
+      this._isListening = false;
+      await this.connection.invoke("LeaveChat", this._userId, chatGroupId);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  inviteToChat = async (chatGroupId: string, username: string) => {
+    try {
+      const invite = await axios.post<InviteToChatType>(
+        `${this._serverUrl}/chats/invite`,
+        {
+          chatGroupId,
+          userName: username,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this._token}`,
+          },
+        }
+      );
+      toast.success("Invited");
+      return invite;
+    } catch (e: any) {
+      const { request } = handleError(e);
+      return request;
+    }
+  };
+}

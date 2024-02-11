@@ -61,7 +61,8 @@ namespace chatapp.Repositories
                     Attachment = model.Attachment,
                     SenderId = model.SenderId,
                     ChatGroupId = model.ChatGroupId,
-                    Type = model.Type
+                    Type = model.Type,
+                    Sender = foundUser.UserToUserDto() 
                 };
             }
 
@@ -122,6 +123,8 @@ namespace chatapp.Repositories
                     query = queryObject.IsDescending ? query.OrderByDescending(m => m.CreatedOn) : query.OrderBy(m => m.CreatedOn);
                     break;
             }
+
+            var tmp = query.ToList();
 
             query = query.Skip((queryObject.Page - 1) * queryObject.PageSize).Take(queryObject.PageSize);
 

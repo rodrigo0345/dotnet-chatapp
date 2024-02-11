@@ -1,7 +1,7 @@
 import { useAuth } from "../Context/useAuth";
-import { MessageResponse } from "../Services/ChatService";
+import { MessageType } from "../Services/ChatService";
 
-export default function Message(message: MessageResponse) {
+export default function Message(message: MessageType) {
   const { user } = useAuth();
 
   function formatMessageDate(createdOn: string) {
@@ -57,6 +57,7 @@ export default function Message(message: MessageResponse) {
   return (
     <div className="w-full min-h-20 flex justify-start relative my-4">
       <div className="self-end max-w-60 flex flex-col justify-end">
+        <p className="text-sm">{message.sender.username}</p>
         <div className="bg-gray-500 text-white p-2 rounded-lg rounded-tl-[0] shadow-md py-2 px-3 flex flex-col gap-2">
           {message.attachment && (
             <img src={message.attachment} alt="" className="rounded-lg" />

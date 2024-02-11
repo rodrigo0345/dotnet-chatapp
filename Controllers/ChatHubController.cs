@@ -13,14 +13,14 @@ namespace ShoppingProject.Controllers
         {
             _messageRepository = messageRepository;
         }
-        public async Task JoinChat(string userId, Guid chatId)
+        public async Task JoinChat(string userId, string chatId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, chatId.ToString());
+            await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
         }
 
-        public async Task LeaveChat(string userId, Guid chatId)
+        public async Task LeaveChat(string userId, string chatId)
         {
-            await Groups.RemoveFromGroupAsync(userId, chatId.ToString());
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatId);
         }
 
         public async Task SendMessage(CreateMessageDto message)

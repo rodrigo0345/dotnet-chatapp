@@ -1,23 +1,30 @@
 import { FormEvent } from "react";
-import { ChatGroupProp, inviteToChat } from "../Services/ChatService";
 import { useAuth } from "../Context/useAuth";
+import { InviteToChatType, UserService } from "../Services/UserService";
+import { ChatService } from "../Services/ChatService";
 
 export default function Invite({
   chatGroup,
+  userService,
+  chatService,
 }: {
-  chatGroup: ChatGroupProp | null;
+  chatGroup: InviteToChatType | null;
+  userService: UserService;
+  chatService: ChatService;
 }) {
-  const { getToken, user } = useAuth();
+  const { user } = useAuth();
+
   const inviteFriend = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const friend = formData.get("friend");
     const chatGroupId = chatGroup?.chatGroup.id;
 
-    if (!friend || !chatGroupId) return;
+    if (friend?.toString().trim().length === 0 || !friend || !chatGroupId)
+      return;
 
     // send invite
-    await inviteToChat(chatGroupId, friend.toString(), getToken());
+    await chatService.inviteToChat(chatGroupId, friend.toString());
   };
 
   if (chatGroup?.chatGroup.userId != user?.id) {

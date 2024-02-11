@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../Context/useAuth";
-import {
-  ChatGroupProp,
-  acceptInvite,
-  getPendentInvites,
-} from "../Services/ChatService";
+import { InviteToChatType, UserService } from "../Services/UserService";
+import { ChatService } from "../Services/ChatService";
 
-export default function InvitesList() {
-  const { user, getToken } = useAuth();
-  const [invites, setInvites] = useState<ChatGroupProp[]>([]);
+export default function InvitesList({
+  userService,
+  chatService,
+}: {
+  userService: UserService;
+  chatService: ChatService;
+}) {
+  const [invites, setInvites] = useState<InviteToChatType[]>([]);
 
   const getInvites = async () => {
-    if (!user?.id) return console.error("User not found");
-    return await getPendentInvites(user?.id, getToken());
+    return await userService.getPendentInvites();
   };
 
-  const acceptInviteModule = async (chat: ChatGroupProp) => {
-    const result = await acceptInvite(chat, getToken());
+  const acceptInviteModule = async (chat: InviteToChatType) => {
+    const result = await userService.acceptInvite(chat);
 
     if (!result) return console.error("Error accepting invite");
 

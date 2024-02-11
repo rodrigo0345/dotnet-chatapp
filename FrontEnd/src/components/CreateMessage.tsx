@@ -1,23 +1,19 @@
 import React, { FormEvent } from "react";
-import {
-  ChatGroupProp,
-  MessageResponse,
-  MessageType,
-  sendMessage,
-} from "../Services/ChatService";
-import { useAuth } from "../Context/useAuth";
+import { MessageType, MessageEnum, ChatService } from "../Services/ChatService";
 import { toast } from "react-toastify";
+import { InviteToChatType, UserService } from "../Services/UserService";
 
 export default function CreateMessage({
   group,
   setMessages,
-  connection,
+  userService,
+  chatService,
 }: {
-  group: ChatGroupProp;
+  group: InviteToChatType;
   setMessages: any;
-  connection: signalR.HubConnection;
+  userService: UserService;
+  chatService: ChatService;
 }) {
-  const { token, user } = useAuth();
   const sendMessageComponent = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -26,42 +22,33 @@ export default function CreateMessage({
     const attachment = formData.get("attachment");
     const attachmentType = attachment?.toString().split(".").pop();
 
-    let type: MessageType = MessageType.Text;
+    let type: MessageEnum = MessageEnum.Text;
     if (
       attachmentType === "png" ||
       attachmentType === "jpg" ||
       (attachmentType === "jpeg" && !content)
     ) {
       // send image
-      type = MessageType.Image;
+      type = MessageEnum.Image;
     }
 
     if (attachmentType === "mp4" && !content) {
       // send video
-      type = MessageType.Video;
+      type = MessageEnum.Video;
     }
 
     if (attachmentType === "mp3" && !content) {
       // send audio
-      type = MessageType.Audio;
+      type = MessageEnum.Audio;
     }
 
-    if (!token || !user) {
-      toast.error("You are not logged in");
-      return;
-    }
-
-    await sendMessage(
-      {
-        chatGroupId: group.chatGroup.id,
-        senderId: user?.id,
-        content: content?.toString() || "",
-        attachment: attachment?.toString() || "",
-        type,
-      },
-      JSON.parse(token),
-      connection
-    );
+    await chatService.sendMessage({
+      chatGroupId: group.chatGroup.id,
+      senderId: "autocomplete",
+      content: content?.toString() || "",
+      attachment: attachment?.toString() || "",
+      type,
+    });
 
     e.currentTarget.reset();
   };
