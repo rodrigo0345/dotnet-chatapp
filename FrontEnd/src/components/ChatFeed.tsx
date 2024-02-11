@@ -13,25 +13,28 @@ export default function ChatFeed({
   group,
   messages,
   setMessages,
+  connection,
 }: {
   group: ChatGroupProp;
   messages: MessageResponse[];
   setMessages: any;
+  connection: signalR.HubConnection;
 }) {
   const { getToken, user } = useAuth();
 
   useEffect(() => {
     console.log({ groupId: group.chatGroup.id, token: getToken() });
     getChatMessages(group.chatGroup.id, getToken()).then((messages) => {
-      console.log({ messages });
       if (messages) setMessages(messages.data);
     });
-    joinChatRoom(group.chatGroup.id, user?.id ?? "0", getToken(), setMessages);
+    joinChatRoom(
+      group.chatGroup.id,
+      user?.id ?? "0",
+      getToken(),
+      setMessages,
+      connection
+    );
   }, [group]);
-
-  useEffect(() => {
-    console.log({ messages });
-  }, [messages]);
 
   const scrollToBottom = () => {
     const chatFeed = document.getElementById("chat-feed");

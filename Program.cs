@@ -24,6 +24,7 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
+    options.MaximumReceiveMessageSize = 102400000;
 });
 
 // Add services to the container.
@@ -150,6 +151,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapHub<ChatHub>("/api/chatHub");
+app.MapHub<ChatHubController>("/api/chatHub");
 
 app.Run();

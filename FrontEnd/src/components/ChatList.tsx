@@ -21,7 +21,6 @@ export default function ChatList({
 
   useEffect(() => {
     getMyChats(user?.id ?? "0", getToken()).then((chats: any) => {
-      console.log({ chats });
       setChats(chats.data);
       setMainChat(chats.data[0]);
     });

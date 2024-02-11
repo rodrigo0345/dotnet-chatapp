@@ -11,9 +11,11 @@ import { toast } from "react-toastify";
 export default function CreateMessage({
   group,
   setMessages,
+  connection,
 }: {
   group: ChatGroupProp;
   setMessages: any;
+  connection: signalR.HubConnection;
 }) {
   const { token, user } = useAuth();
   const sendMessageComponent = async (e: FormEvent<HTMLFormElement>) => {
@@ -49,7 +51,7 @@ export default function CreateMessage({
       return;
     }
 
-    const { data }: { data: MessageResponse } = await sendMessage(
+    await sendMessage(
       {
         chatGroupId: group.chatGroup.id,
         senderId: user?.id,
@@ -57,10 +59,9 @@ export default function CreateMessage({
         attachment: attachment?.toString() || "",
         type,
       },
-      JSON.parse(token)
+      JSON.parse(token),
+      connection
     );
-
-    setMessages((prev: MessageResponse[]) => [...prev, data]);
 
     e.currentTarget.reset();
   };

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatGroupProp, MessageResponse } from "../Services/ChatService";
 import ChatFeed from "./ChatFeed";
 import CreateMessage from "./CreateMessage";
 import { set } from "react-hook-form";
 import Invite from "./Invite";
+import * as signalR from "@microsoft/signalr";
+import { api } from "../Services/AuthService";
 
 export default function Chat({
   mainChat,
@@ -11,6 +13,21 @@ export default function Chat({
   mainChat?: ChatGroupProp | null;
 }) {
   const [messages, setMessages] = useState<MessageResponse[]>([]);
+  const [connection, setConnection] = useState<signalR.HubConnection>(
+    new signalR.HubConnectionBuilder()
+      .withUrl(`${api}/chatHub`, {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets,
+      })
+      .configureLogging(signalR.LogLevel.Information)
+      .build()
+  );
+
+  useEffect(() => {
+    connection.start().then(() => {
+      console.log("connected");
+    });
+  }, []);
 
   if (mainChat === null) {
     return (
@@ -38,11 +55,13 @@ export default function Chat({
             messages={messages}
             setMessages={setMessages}
             group={mainChat}
+            connection={connection}
           ></ChatFeed>
           <CreateMessage
             group={mainChat}
             setMessages={setMessages}
             {...mainChat}
+            connection={connection}
           ></CreateMessage>
         </div>
       )}

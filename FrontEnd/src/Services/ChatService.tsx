@@ -225,18 +225,26 @@ export type MessageResponse = {
   };
 };
 
-export const sendMessage = async (message: Message, userToken: string) => {
-  try {
-    const data = await axios.post<MessageResponse>(`${api}/message`, message, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
-    return data;
-  } catch (e: any) {
-    const { request } = handleError(e);
-    return request;
-  }
+export const sendMessage = async (
+  message: Message,
+  userToken: string,
+  connection: signalR.HubConnection
+) => {
+  await connection
+    .invoke("SendMessage", message)
+    .then(() => console.log("Message sent"))
+    .catch((e) => console.error(e));
+  //   try {
+  //     const data = await axios.post<MessageResponse>(`${api}/message`, message, {
+  //       headers: {
+  //         Authorization: `Bearer ${userToken}`,
+  //       },
+  //     });
+  //     return data;
+  //   } catch (e: any) {
+  //     const { request } = handleError(e);
+  //     return request;
+  //   }
 };
 
 // REALTIME CHAT functionality
@@ -245,23 +253,16 @@ export const joinChatRoom = async (
   chatGroupId: string,
   userId: string,
   userToken: string,
-  setMessages: any
+  setMessages: any,
+  connection: signalR.HubConnection
 ) => {
-  const connection = new signalR.HubConnectionBuilder()
-    .withUrl(`${api}/chatHub`, {
-      skipNegotiation: true,
-      transport: signalR.HttpTransportType.WebSockets,
-    })
-    .configureLogging(signalR.LogLevel.Debug)
-    .build();
-
+  console.log("Joining chat room", { chatGroupId }, { userId }, userToken);
   connection.on("ReceiveMessage", (message: MessageResponse) => {
-    if (message.senderId === userId) return;
+    console.log("Received message", message);
     setMessages((prev: MessageResponse[]) => [...prev, message]);
   });
 
   try {
-    await connection.start();
     await connection.invoke("JoinChat", userId, chatGroupId);
   } catch (e) {
     console.error(e);
@@ -271,16 +272,9 @@ export const joinChatRoom = async (
 export const leaveChatRoom = async (
   chatGroupId: string,
   userId: string,
-  userToken: string
+  userToken: string,
+  connection: signalR.HubConnection
 ) => {
-  const connection = new signalR.HubConnectionBuilder()
-    .withUrl(`${api}/chatHub`, {
-      skipNegotiation: true,
-      transport: signalR.HttpTransportType.WebSockets,
-    })
-    .configureLogging(signalR.LogLevel.Debug)
-    .build();
-
   try {
     await connection.start();
     await connection.invoke("LeaveChat", userId, chatGroupId);
