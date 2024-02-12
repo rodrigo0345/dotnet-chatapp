@@ -5,6 +5,11 @@ import { InviteToChatType, UserService } from "../Services/UserService";
 import { ChatService } from "../Services/ChatService";
 import { useAuth } from "../Context/useAuth";
 import { get } from "react-hook-form";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 export default function Chats() {
   const { user, getToken, logout } = useAuth();
@@ -54,18 +59,25 @@ export default function Chats() {
 
   return (
     <div className="grid grid-flow-row grid-cols-6 h-full relative  p-6 font-customFont bg-gradient-to-tl from-gray-700/60 to-slate-950">
-      <ChatList
-        userService={userService}
-        chatService={chatService}
-        selectedChat={selectedChat}
-        setSelectedChat={setSelectedChat}
-        allChats={chatList}
-      ></ChatList>
-      <Chat
-        chatService={chatService}
-        userService={userService}
-        selectedChat={selectedChat}
-      ></Chat>
+      <ResizablePanelGroup className="col-span-6" direction="horizontal">
+        <ResizablePanel defaultSize={45} minSize={30} maxSize={45}>
+          <ChatList
+            userService={userService}
+            chatService={chatService}
+            selectedChat={selectedChat}
+            setSelectedChat={setSelectedChat}
+            allChats={chatList}
+          ></ChatList>
+        </ResizablePanel>
+        <ResizableHandle className="bg-transparent" />
+        <ResizablePanel defaultSize={80}>
+          <Chat
+            chatService={chatService}
+            userService={userService}
+            selectedChat={selectedChat}
+          ></Chat>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

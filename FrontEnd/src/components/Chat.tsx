@@ -8,6 +8,20 @@ import * as signalR from "@microsoft/signalr";
 import { api } from "../Services/AuthService";
 import { InviteToChatType, UserService } from "../Services/UserService";
 import { useAuth } from "../Context/useAuth";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { group } from "console";
+import { IoMdCall } from "react-icons/io";
+import { IoChatboxSharp } from "react-icons/io5";
 
 export default function Chat({
   selectedChat,
@@ -30,37 +44,69 @@ export default function Chat({
   return (
     <>
       {selectedChat && (
-        <div className="grid col-span-4 row-span-6 relative h-full p-0">
-          <section className="row-span-1 flex gap-2 w-full text-white p-4 justify-between px-6 align-middle items-center relative border-0 border-b border-slate-700/80">
-            <div className="flex items-center gap-2">
-              <img
-                src={selectedChat.chatGroup.logo}
-                alt="group photo"
-                className="w-10 h-10 rounded-full object-cover object-center"
-              />
-              <h1 className="font-normal text-lg">
-                {selectedChat.chatGroup.name}
-              </h1>
-            </div>
-            <Invite
+        <div className="relative h-full p-0">
+          <Tabs
+            defaultValue="chat"
+            className="grid col-span-4 row-span-6 h-full relative"
+          >
+            <header className="row-span-1 flex gap-2 self-start pb-4 w-full text-white justify-between px-4 align-middle items-center relative border-0 border-b border-slate-700/80">
+              <TabsList className="bg-slate-950/30">
+                <TabsTrigger
+                  className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1"
+                  value="chat"
+                  defaultChecked
+                >
+                  <IoChatboxSharp />
+                </TabsTrigger>
+                <TabsTrigger
+                  className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1"
+                  value="call"
+                >
+                  {false && <IoMdCall />}
+                  {true && (
+                    <div className="text-green-500 animate-pulse">
+                      <IoMdCall />
+                    </div>
+                  )}
+                </TabsTrigger>
+              </TabsList>
+
+              <section className="flex items-center gap-3">
+                <h2 className="text-sm text-gray-300">
+                  {selectedChat.chatGroup.name}
+                </h2>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    className="object-cover"
+                    src={selectedChat.chatGroup.logo}
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </section>
+
+              {/* <Invite
               chatService={chatService}
               userService={userService}
               chatGroup={selectedChat}
-            ></Invite>
-          </section>
-          <ChatFeed
-            messages={messages}
-            setMessages={setMessages}
-            group={selectedChat}
-            chatService={chatService}
-            userService={userService}
-          ></ChatFeed>
-          <CreateMessage
-            group={selectedChat}
-            setMessages={setMessages}
-            chatService={chatService}
-            userService={userService}
-          ></CreateMessage>
+            ></Invite> */}
+            </header>
+            <TabsContent value="chat" className="row-span-5 grid">
+              <ChatFeed
+                messages={messages}
+                setMessages={setMessages}
+                group={selectedChat}
+                chatService={chatService}
+                userService={userService}
+              ></ChatFeed>
+              <CreateMessage
+                group={selectedChat}
+                setMessages={setMessages}
+                chatService={chatService}
+                userService={userService}
+              ></CreateMessage>
+            </TabsContent>
+            <TabsContent value="" className="row-span-5"></TabsContent>
+          </Tabs>
         </div>
       )}
     </>

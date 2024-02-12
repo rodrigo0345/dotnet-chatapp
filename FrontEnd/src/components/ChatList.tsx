@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ChatList({
   setSelectedChat,
@@ -147,11 +148,13 @@ export default function ChatList({
             >
               <div className="relative">
                 <div className="bottom-0 right-0 bg-green-400 h-2 w-2 rounded-full absolute"></div>
-                <img
-                  className="h-10 w-14 rounded-full object-cover"
-                  src={chat.chatGroup.logo}
-                  alt=""
-                />
+                <Avatar>
+                  <AvatarImage
+                    className="object-cover"
+                    src={chat.chatGroup.logo}
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
               </div>
               <button
                 onClick={() => setSelectedChat(chat)}

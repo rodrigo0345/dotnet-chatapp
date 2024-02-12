@@ -17,6 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { object } from "yup";
 import { IoMdRemoveCircle } from "react-icons/io";
 import { set } from "react-hook-form";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function CreateMessage({
   group,
@@ -231,7 +232,10 @@ export default function CreateMessage({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <FaUserAstronaut size="20" />
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Profile</p>
