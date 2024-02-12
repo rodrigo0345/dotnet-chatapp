@@ -30,8 +30,8 @@ export default function Chat({
   return (
     <>
       {selectedChat && (
-        <div className="col-span-4 h-full relative flex flex-col">
-          <section className="flex gap-2 w-full text-white p-4 justify-between px-6 align-middle items-center">
+        <div className="grid col-span-4 row-span-6 relative h-full p-0">
+          <section className="row-span-1 flex gap-2 w-full text-white p-4 justify-between px-6 align-middle items-center relative">
             <div className="flex items-center gap-2">
               <img
                 src={selectedChat.chatGroup.logo}

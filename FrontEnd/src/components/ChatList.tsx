@@ -51,10 +51,10 @@ export default function ChatList({
   };
 
   return (
-    <div className=" col-span-2 h-full bg-zinc-950/30 backdrop-blur-lg  text-white m-2 rounded-md border border-slate-700/80">
+    <div className=" col-span-2 row-span-6 h-full bg-zinc-950/30 backdrop-blur-lg  text-white mx-2 rounded-md border border-slate-700/80 shadow-lg">
       <div className="flex flex-col gap-2 my-2">
         <div className="w-full px-4 pt-2">
-          <h1 className="text-2xl font-rubik text-gray-200">Hash</h1>
+          <h1 className="text-2xl font-rubik text-gray-200 font-light">Hash</h1>
         </div>
         <form
           id="search-chats"
@@ -167,9 +167,6 @@ export default function ChatList({
           ))
         )}
       </div>
-      <button onClick={() => setIsNewChatModalOpen(!isNewChatModalOpen)}>
-        New Chat
-      </button>
       <InvitesList chatService={chatService} userService={userService} />
     </div>
   );

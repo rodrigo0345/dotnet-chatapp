@@ -37,7 +37,7 @@ export default function Chats() {
     us.getMyChats().then((chats) => {
       setChatList(chats.data);
       setSelectedChat(() => {
-        const found = chats.data.find((chat) => chat.chatGroup.id === lchatid);
+        const found = chats.data?.find((chat) => chat.chatGroup.id === lchatid);
         console.log("found:", found);
         return found ? found : chats.data[0];
       });
@@ -53,7 +53,7 @@ export default function Chats() {
     return <div>Loading...</div>;
 
   return (
-    <div className="grid grid-flow-row grid-cols-6 h-full bg-gradient-to-tl from-gray-700/60 to-slate-950 p-6 font-customFont">
+    <div className="grid grid-flow-row grid-cols-6 h-full relative  p-6 font-customFont bg-gradient-to-tl from-gray-700/60 to-slate-950">
       <ChatList
         userService={userService}
         chatService={chatService}

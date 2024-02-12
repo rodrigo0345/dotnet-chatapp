@@ -14,7 +14,8 @@ namespace chatapp.Models
         Image,
         Video,
         Audio,
-        File
+        File,
+        PDF
     }
     [Table("Messages")]
     public class Message

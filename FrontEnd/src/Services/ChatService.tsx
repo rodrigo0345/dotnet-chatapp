@@ -11,6 +11,7 @@ export enum MessageEnum {
   Video = 2,
   Audio = 3,
   File = 4,
+  PDF = 5,
 }
 
 export type MessageCreateType = {

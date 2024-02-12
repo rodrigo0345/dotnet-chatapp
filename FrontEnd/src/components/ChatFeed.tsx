@@ -38,23 +38,5 @@ export default function ChatFeed({
       chatFeed.scrollTop = chatFeed.scrollHeight;
     }
   };
-  return (
-    <div className="grid grid-flow-row grid-cols-6 h-full relative">
-      <div className="col-span-6">
-        <div
-          onLoad={scrollToBottom}
-          id="chat-feed"
-          className="overflow-y-scroll p-4 max-h-[100%] scroll-smooth"
-        >
-          {messages.map((message) => (
-            <Message key={message.id} {...message} />
-          ))}
-        </div>
-      </div>
-      <button
-        className="absolute bottom-24 left-4 bg-blue-400/70 h-10 w-10 rounded-full"
-        onClick={scrollToBottom}
-      ></button>
-    </div>
-  );
+  return <div className="row-span-6 "></div>;
 }
