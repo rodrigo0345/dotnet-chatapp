@@ -47,7 +47,7 @@ export default function Chat({
         <div className="relative h-full p-0">
           <Tabs
             defaultValue="chat"
-            className="grid col-span-4 row-span-6 h-full relative"
+            className="grid col-span-4 row-span-8 h-full relative"
           >
             <header className="row-span-1 flex gap-2 self-start pb-4 w-full text-white justify-between px-4 align-middle items-center relative border-0 border-b border-slate-700/80">
               <TabsList className="bg-slate-950/30">
@@ -90,7 +90,7 @@ export default function Chat({
               chatGroup={selectedChat}
             ></Invite> */}
             </header>
-            <TabsContent value="chat" className="row-span-5 grid">
+            <TabsContent value="chat" className="row-span-10 grid">
               <ChatFeed
                 messages={messages}
                 setMessages={setMessages}
