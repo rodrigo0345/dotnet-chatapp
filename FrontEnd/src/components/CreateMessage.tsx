@@ -34,6 +34,7 @@ export default function CreateMessage({
   type Attachment = {
     type: MessageEnum;
     content: string;
+    path: string;
   };
 
   const [loadedAttachment, setLoadedAttachment] = useState<Attachment | null>();
@@ -83,6 +84,7 @@ export default function CreateMessage({
       const attachment: Attachment = {
         type: checkAttachmentType(file.name),
         content: result.toString(),
+        path: file.name,
       };
       setLoadedAttachment(attachment);
       saveAttachmentAndMessageLocally(attachment, message, group.id);
@@ -166,7 +168,7 @@ export default function CreateMessage({
   };
 
   return (
-    <div className="row-span-1 self-end relative flex flex-col gap-1">
+    <div className="row-span-1 self-end relative flex flex-col gap-2">
       {loadingAttachment > 0.0 && (
         <div className="px-3 py-3 mx-6 bg-slate-600/20 rounded-xl flex items-center justify-start relative shadow-lg">
           {loadingAttachment !== 100 ? (
@@ -261,6 +263,7 @@ export default function CreateMessage({
           </div>
           <input
             onChange={loadAttachment}
+            value={loadedAttachment?.path}
             className="hidden absolute"
             type="file"
             id="file-uploader"
