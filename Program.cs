@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using ShoppingProject.Controllers;
 using ShoppingProject.Data;
+using ShoppingProject.Interfaces;
 using ShoppingProject.Models;
 using ShoppingProject.Repositories;
 using ShoppingProject.Services;
@@ -26,6 +27,10 @@ builder.Services.AddSignalR(options =>
     options.EnableDetailedErrors = true;
     options.MaximumReceiveMessageSize = 102400000;
 });
+
+// configure blob storage
+builder.Services.AddScoped<IStorageService, StorageService>();
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

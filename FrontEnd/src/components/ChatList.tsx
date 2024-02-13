@@ -53,10 +53,7 @@ export default function ChatList({
 
   return (
     <div className=" col-span-2 row-span-6 h-full bg-zinc-950/30 backdrop-blur-lg  text-white mx-2 rounded-md border border-slate-700/80 shadow-lg">
-      <div className="flex flex-col gap-2 my-2">
-        <div className="w-full px-4 pt-2">
-          <h1 className="text-2xl font-rubik text-gray-200 font-light">Hash</h1>
-        </div>
+      <div className="flex flex-col gap-2 my-6">
         <form
           id="search-chats"
           className="flex mx-4 rounded-full items-center px-2 pl-4 py-2 gap-2 bg-slate-900"
