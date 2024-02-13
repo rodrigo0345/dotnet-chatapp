@@ -1,56 +1,108 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "../Context/useAuth";
 import { MessageType } from "../Services/ChatService";
+import { set } from "react-hook-form";
+import { Separator } from "@/components/ui/separator";
 
-export default function Message(message: MessageType) {
+export default function Message({
+  message,
+  lastMessage,
+}: {
+  message: MessageType;
+  lastMessage: MessageType | null;
+}) {
   const { user } = useAuth();
+  const [groupMessages, setGroupMessages] = useState<boolean>(false);
+  const [isAnotherDay, setIsAnotherDay] = useState<boolean>(false);
+
+  useEffect(() => {
+    const currentMessageCreatedOn = new Date(message.createdOn);
+    const lastMessageCreatedOn = new Date(lastMessage?.createdOn as any);
+
+    if (currentMessageCreatedOn.getDay() !== lastMessageCreatedOn.getDay()) {
+      setIsAnotherDay(true);
+      setGroupMessages(false);
+      return;
+    }
+
+    if (message.senderId !== lastMessage?.senderId) {
+      setGroupMessages(false);
+      return;
+    }
+
+    const timeDifference =
+      (currentMessageCreatedOn.getMilliseconds() -
+        lastMessageCreatedOn.getMilliseconds()) /
+      1000; // converting to seconds
+
+    if (timeDifference > 60.0) {
+      setGroupMessages(false);
+    } else if (message?.senderId === lastMessage?.senderId) {
+      setGroupMessages(true);
+    }
+  }, [message, lastMessage]);
 
   function formatMessageDate(createdOn: string) {
     const messageDate = new Date(createdOn);
-    const now = new Date();
 
-    const minutesAgo = Math.floor(
-      (now.getTime() - messageDate.getTime()) / (1000 * 60)
-    );
+    return messageDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+    });
+  }
 
-    if (minutesAgo < 1) {
-      return "Just now";
-    } else if (minutesAgo < 60) {
-      return `${minutesAgo}m ago`;
-    } else if (
-      now.getFullYear() === messageDate.getFullYear() &&
-      now.getMonth() === messageDate.getMonth() &&
-      now.getDate() === messageDate.getDate()
-    ) {
-      return messageDate.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      });
-    } else {
-      return messageDate.toLocaleDateString("en-US", {
-        month: "short",
+  function formatMessageFullDate(createdOn: string) {
+    const messageDate = new Date(createdOn);
+
+    return messageDate
+      .toLocaleTimeString("en-GB", {
         day: "numeric",
-        year: "numeric",
-      });
-    }
+        month: "numeric",
+      })
+      .replace(",", "")
+      .replace(/\d+:\d+:\d+/, "");
   }
 
   if (user?.id === message.senderId) {
     if (message.content.trim().length === 0) return null;
     return (
-      <div className="w-full min-h-20 flex justify-end relative my-4">
-        <div className="self-end max-w-60 flex flex-col justify-end">
-          <div className="bg-blue-500 text-white p-2 rounded-lg rounded-tr-[0] shadow-md py-2 px-3 flex flex-col gap-2">
-            {message.attachment && (
-              <img src={message.attachment} alt="" className="rounded-lg" />
-            )}
-            {message.content}
+      <>
+        {isAnotherDay && lastMessage?.createdOn && (
+          <div
+            className={`w-full flex justify-end relative
+            mt-2
+          `}
+          >
+            <div className="flex items-center justify-end gap-1 w-full">
+              <div className="text-slate-950/80 rounded-md backdrop-blur-lg flex h-fit flex-col gap-2 min-w-16 w-full px-2">
+                <Separator className="bg-slate-700/30 p-0.5"></Separator>
+              </div>
+              <p className="text-xs font-normal w-14 text-end">
+                {lastMessage?.createdOn && (
+                  <>{formatMessageFullDate(message.createdOn)}</>
+                )}
+              </p>
+            </div>
           </div>
-          <p className="text-xs self-end font-normal">
-            {formatMessageDate(message.createdOn)}
-          </p>
+        )}
+        <div
+          className={`w-full flex justify-end relative
+            mt-2
+          `}
+        >
+          <div className="flex items-center justify-end gap-1">
+            <div className="bg-blue-500/60 text-white px-4 py-2 rounded-md backdrop-blur-lg flex h-fit flex-col gap-2 min-w-16 max-w-60">
+              {message.attachment.trim().length !== 0 && (
+                <img src={message.attachment} alt="" className="rounded-lg" />
+              )}
+              {message.content}
+            </div>
+            <p className="text-xs font-normal w-14 text-end">
+              {!groupMessages && <>{formatMessageDate(message.createdOn)}</>}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -58,13 +110,13 @@ export default function Message(message: MessageType) {
     <div className="w-full min-h-20 flex justify-start relative my-4">
       <div className="self-end max-w-60 flex flex-col justify-end">
         <p className="text-sm">{message.sender.username}</p>
-        <div className="bg-gray-500 text-white p-2 rounded-lg rounded-tl-[0] shadow-md py-2 px-3 flex flex-col gap-2">
+        <div className="bg-slate-500/60 text-white px-4 py-2 rounded-md backdrop-blur-lg flex h-fit flex-col gap-2 min-w-16 shadow-lg">
           {message.attachment && (
             <img src={message.attachment} alt="" className="rounded-lg" />
           )}
           {message.content}
         </div>
-        <p className="text-xs self-end font-normal">
+        <p className="text-xs font-normal">
           {formatMessageDate(message.createdOn)}
         </p>
       </div>

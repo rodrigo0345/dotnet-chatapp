@@ -70,7 +70,7 @@ export class ChatService {
   ): Promise<AxiosResponse<MessageType[], any>> => {
     try {
       const data = await axios.get<MessageType[]>(
-        `${api}/message?FilterValue=${chatId}&FilterBy='ChatGroupId'&ChatGroupId=${chatId}&IsDescending=true&PageSize=10&PageNumber=${pageNumber}`,
+        `${api}/message?FilterValue=${chatId}&FilterBy='ChatGroupId'&ChatGroupId=${chatId}&IsDescending=true&PageSize=20&PageNumber=${pageNumber}`,
         {
           headers: {
             Authorization: `Bearer ${this._token}`,

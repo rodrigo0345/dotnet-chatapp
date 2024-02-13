@@ -34,6 +34,13 @@ export default function Chat({
 }) {
   const [messages, setMessages] = useState<MessageType[]>([]);
 
+  useEffect(() => {
+    return () => {
+      chatService.leaveChatRoom(selectedChat.chatGroup.id);
+      setMessages([]);
+    };
+  }, [selectedChat]);
+
   if (selectedChat === null) {
     return (
       <div className="flex h-full w-full justify-center items-center">
@@ -59,7 +66,7 @@ export default function Chat({
                   <IoChatboxSharp />
                 </TabsTrigger>
                 <TabsTrigger
-                  className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1"
+                  className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1 "
                   value="call"
                 >
                   {false && <IoMdCall />}
@@ -90,7 +97,10 @@ export default function Chat({
               chatGroup={selectedChat}
             ></Invite> */}
             </header>
-            <TabsContent value="chat" className="row-span-10 grid">
+            <TabsContent
+              value="chat"
+              className="grid row-span-10 h-full relative p-0 mt-0"
+            >
               <ChatFeed
                 messages={messages}
                 setMessages={setMessages}

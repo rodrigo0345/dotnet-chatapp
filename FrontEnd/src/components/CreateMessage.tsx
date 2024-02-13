@@ -1,9 +1,9 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { MessageType, MessageEnum, ChatService } from "../Services/ChatService";
 import { toast } from "react-toastify";
 import { InviteToChatType, UserService } from "../Services/UserService";
 import { useAuth } from "@/Context/useAuth";
-import { FaUserAstronaut } from "react-icons/fa";
+import { FaPlay, FaUserAstronaut } from "react-icons/fa";
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +18,7 @@ import { object } from "yup";
 import { IoMdRemoveCircle } from "react-icons/io";
 import { set } from "react-hook-form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FaPause } from "react-icons/fa";
 
 export default function CreateMessage({
   group,
@@ -41,8 +42,11 @@ export default function CreateMessage({
   const [loadedAttachment, setLoadedAttachment] = useState<Attachment | null>();
   const [loadingAttachment, setLoadingAttachment] = useState<number>(0.0);
   const [message, setMessage] = useState<string>("");
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const visualizerRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    setIsPlaying(false);
     const groupId = group.id;
     const result = loadAttatchmentAndMessageSavedLocally(groupId).then(
       (result) => {
@@ -62,6 +66,7 @@ export default function CreateMessage({
   }, [group]);
 
   const loadAttachment = async (e: any) => {
+    setIsPlaying(false);
     setLoadingAttachment(0.0);
     setLoadedAttachment(null);
 
@@ -87,6 +92,7 @@ export default function CreateMessage({
         content: result.toString(),
         path: file.name,
       };
+      console.log({ attachment });
       setLoadedAttachment(attachment);
       saveAttachmentAndMessageLocally(attachment, message, group.id);
     };
@@ -171,7 +177,7 @@ export default function CreateMessage({
   return (
     <div className="row-span-1 self-end relative flex flex-col gap-2">
       {loadingAttachment > 0.0 && (
-        <div className="px-3 py-3 mx-6 bg-slate-600/20 rounded-xl flex items-center justify-start relative shadow-lg">
+        <div className="px-3 py-3 mx-6 bg-slate-600/20 rounded-xl flex items-center justify-start shadow-lg w-fit absolute z-10 -translate-y-40 top-0 backdrop-blur-lg">
           {loadingAttachment !== 100 ? (
             <Progress value={loadingAttachment} color="#84cc16" className="" />
           ) : (
@@ -195,18 +201,68 @@ export default function CreateMessage({
                   />
                 )}
                 {loadedAttachment?.type === MessageEnum.Video && (
-                  <video
-                    className="object-cover h-full w-full rounded-md"
-                    src={loadedAttachment?.content}
-                    controls
-                  ></video>
+                  <div className="flex items-center justify-center h-full w-full text-gray-300">
+                    <video
+                      id="video-01"
+                      className="object-cover h-full w-full rounded-md"
+                      loop
+                      src={loadedAttachment?.content}
+                    ></video>
+
+                    <button
+                      className="absolute h-10 w-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-200"
+                      onClick={() => {
+                        const videoElement: any =
+                          document.getElementById("video-01");
+
+                        if (videoElement.paused) {
+                          videoElement.play();
+                          setIsPlaying(true);
+                        } else {
+                          videoElement.pause();
+                          setIsPlaying(false);
+                        }
+                      }}
+                    >
+                      {!isPlaying && <FaPlay size={25} />}
+                      {isPlaying && <FaPause size={25} />}
+                    </button>
+                  </div>
                 )}
                 {loadedAttachment?.type === MessageEnum.Audio && (
-                  <audio
-                    className="object-cover h-full w-full rounded-md"
-                    src={loadedAttachment?.content}
-                    controls
-                  ></audio>
+                  <div className="flex items-center justify-center h-full w-full text-gray-300">
+                    <audio
+                      loop
+                      id="audio-01"
+                      className="hidden object-cover h-full w-full rounded-md"
+                      src={loadedAttachment?.content}
+                    ></audio>
+                    <img
+                      className="object-cover h-full w-full rounded-md grayscale "
+                      src={
+                        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOG1rNWg0Y285ODNlemk3aGtscWV0cnI5bzdoeXcxdzhlYTljZmZndCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XMaB779YCmP9m/giphy.gif"
+                      }
+                      alt=""
+                    />
+
+                    <button
+                      className="absolute h-10 w-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-200"
+                      onClick={() => {
+                        const audio: any = document.getElementById("audio-01");
+
+                        if (audio.paused) {
+                          audio.play();
+                          setIsPlaying(true);
+                          return;
+                        }
+                        audio.pause();
+                        setIsPlaying(false);
+                      }}
+                    >
+                      {!isPlaying && <FaPlay size={25} />}
+                      {isPlaying && <FaPause size={25} />}
+                    </button>
+                  </div>
                 )}
                 {loadedAttachment?.type === MessageEnum.PDF && (
                   <object
@@ -267,7 +323,6 @@ export default function CreateMessage({
           </div>
           <input
             onChange={loadAttachment}
-            value={loadedAttachment?.path}
             className="hidden absolute"
             type="file"
             id="file-uploader"

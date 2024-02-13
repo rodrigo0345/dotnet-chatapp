@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatService, MessageType } from "../Services/ChatService";
 import { useAuth } from "../Context/useAuth";
 import Message from "./Message";
@@ -18,6 +18,13 @@ export default function ChatFeed({
   chatService: ChatService;
   userService: UserService;
 }) {
+  const [height, setHeight] = useState(0);
+  const ref = useRef<any>(null);
+
+  useEffect(() => {
+    setHeight(ref?.current?.innerHeight);
+  });
+
   useEffect(() => {
     chatService.getChatMessages(group.chatGroup.id).then((messages) => {
       if (messages) setMessages(messages.data.reverse());
@@ -39,16 +46,18 @@ export default function ChatFeed({
       chatFeed.scrollTop = chatFeed.scrollHeight;
     }
   };
+
   return (
-    <div className="row-span-6 ">
-      <ScrollArea className="h-full w-full rounded-md text-gray-300 p-4">
-        Jokester began sneaking into the castle in the middle of the night and
-        leaving jokes all over the place: under the king's pillow, in his soup,
-        even in the royal toilet. The king was furious, but he couldn't seem to
-        stop Jokester. And then, one day, the people of the kingdom discovered
-        that the jokes left by Jokester were so funny that they couldn't help
-        but laugh. And once they started laughing, they couldn't stop.
-      </ScrollArea>
-    </div>
+    <ScrollArea
+      className={`h-[630px] row-span-7 w-full rounded-md text-gray-300 mt-4 px-4`}
+    >
+      {messages.map((message, index) => (
+        <Message
+          key={index}
+          lastMessage={messages[index - 1] ?? null}
+          message={message}
+        />
+      ))}
+    </ScrollArea>
   );
 }
