@@ -5,6 +5,7 @@ import { set } from "react-hook-form";
 import { Separator } from "@/components/ui/separator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 export default function Message({
   message,
@@ -148,7 +149,7 @@ export default function Message({
             ${groupMessages ? "mt-2" : "mt-4"}
           `}
       >
-        <div className="flex items-center justify-end gap-1 px-1">
+        <div className="flex items-center justify-start gap-1 pl-10 w-full">
           {message.attachment.trim().length !== 0 && (
             <img
               src={message.attachment}
@@ -168,19 +169,30 @@ export default function Message({
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
               {!groupMessages && (
-                <>
-                  <AvatarImage
-                    className="object-cover"
-                    src="https://georgiapoliticalreview.com/wp-content/uploads/2014/04/Finn-The-Human.jpg"
-                  />
-                  <AvatarFallback>CN</AvatarFallback>
-                </>
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <AvatarImage
+                      className="cursor-help object-cover"
+                      src="https://georgiapoliticalreview.com/wp-content/uploads/2014/04/Finn-The-Human.jpg"
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="bg-slate-800 border-none text-gray-300">
+                    <div>
+                      <p className="text-lg font-bold">
+                        {message.sender.username}
+                      </p>
+                      <p className="text-sm">
+                        <a href="mailto:" className="text-blue-500">
+                          {message.sender.email}
+                        </a>
+                      </p>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
               )}
             </Avatar>
             <div className="bg-slate-600/40 text-white px-4 py-2 rounded-md backdrop-blur-lg flex h-fit flex-col gap-2 min-w-16 max-w-60">
-              {message.attachment.trim().length !== 0 && (
-                <img src={message.attachment} alt="" className="rounded-lg" />
-              )}
               {message.content}
             </div>
           </div>
