@@ -150,4 +150,17 @@ export class ChatService {
       return request;
     }
   };
+
+  uploadAttachment = async (file: File, groupId: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("groupId", groupId);
+    try {
+      const data = await axios.post(`${api}/file`, formData);
+      return data.data;
+    } catch (e) {
+      handleError(e);
+      return null;
+    }
+  };
 }

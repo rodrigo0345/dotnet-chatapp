@@ -43,6 +43,8 @@ export default function CreateMessage({
   const [loadingAttachment, setLoadingAttachment] = useState<number>(0.0);
   const [message, setMessage] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [rawFile, setRawFile] = useState<File | null>(null);
+
   const visualizerRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -71,6 +73,8 @@ export default function CreateMessage({
     setLoadedAttachment(null);
 
     const file = e.target.files[0];
+
+    setRawFile(file);
     const reader = new FileReader();
 
     reader.onprogress = (e) => {
@@ -92,7 +96,6 @@ export default function CreateMessage({
         content: result.toString(),
         path: file.name,
       };
-      console.log({ attachment });
       setLoadedAttachment(attachment);
       saveAttachmentAndMessageLocally(attachment, message, group.id);
     };
@@ -105,7 +108,6 @@ export default function CreateMessage({
     message: string,
     groupId: string
   ) => {
-    console.log({ attachment, message, groupId });
     const localMessage = {
       attachment,
       message,
@@ -125,7 +127,6 @@ export default function CreateMessage({
 
     const message = await JSON.parse(localMessage);
 
-    console.log({ message });
     return message;
   };
 
@@ -160,17 +161,35 @@ export default function CreateMessage({
 
     const formData = new FormData(e.currentTarget);
     const content = formData.get("content");
-    const attachment = formData.get("attachment");
-    const type = checkAttachmentType(attachment?.toString() || "");
+
+    console.log({ rawFile, content });
+    const type = checkAttachmentType(loadedAttachment?.path.toString() || "");
+
+    let attachmentUrl = "";
+
+    if (rawFile) {
+      attachmentUrl = await chatService.uploadAttachment(
+        rawFile,
+        group.chatGroup.id
+      );
+    }
+
+    console.log({ attachmentUrl });
 
     await chatService.sendMessage({
       chatGroupId: group.chatGroup.id,
       senderId: "autocomplete",
       content: content?.toString() || "",
-      attachment: attachment?.toString() || "",
+      attachment: attachmentUrl ?? "",
       type,
     });
 
+    setIsPlaying(false);
+    setLoadedAttachment(null);
+    setLoadingAttachment(0.0);
+    setMessage("");
+    localStorage.removeItem("message" + group.id);
+    localStorage.removeItem("attachment" + group.id);
     e.currentTarget.reset();
   };
 

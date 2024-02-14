@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Mvc;
+using ShoppingProject.Dtos.File;
+using ShoppingProject.Interfaces;
+using ShoppingProject.Interfaces;
 
 namespace ShoppingProject.Controllers
 {
@@ -9,36 +12,50 @@ namespace ShoppingProject.Controllers
     [Authorize]
     public class FileUploadController: Controller
     {
-        private readonly FileUploadRepository _fileUploadRepository;
-        public FileUploadController(FileUploadRepository fileUploadRepository)
+        private readonly IStorageService _storageService;
+        public FileUploadController(IStorageService fileUploadRepository)
         {
-            _fileUploadRepository = fileUploadRepository;
+            _storageService = fileUploadRepository;
         }
-        
-        public async Task<IActionResult> UploadFile([FromBody] CreateFileDto createFileDto, CancellationToken ct)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (String.IsNullOrWhiteSpace(createFileDto.OwnerId))
+        [HttpPost, DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadFile([FromForm] CreateFileDto file, CancellationToken ct) {
+            if (file == null || file.File.Length == 0)
             {
-                if (userId == null)
+                return BadRequest("Invalid file");
+            }
+
+            try
+            {
+                if (file.File.OpenReadStream().Length == 0)
                 {
-                    return BadRequest("Invalid user");
+                    return BadRequest("Empty file stream");
                 }
 
-                // set the owner of the file to the user that is logged in
-                createFileDto.OwnerId = userId;
-                Console.WriteLine($"Your id: {userId}");
-            }
+                // Convert IFormFile to byte[]
+                var fileDto = new FileDto
+                {
+                    GroupId = file.GroupId,
+                    Extension = Path.GetExtension(file.File.FileName).TrimStart('.'),
+                    Stream =file.File
+                };
 
-            var result = await _fileUploadRepository.createOneAsync(createFileDto, ct);
-            if (result != null)
-            {
-                return Ok(result);
+                var response = await _storageService.UploadAsync(fileDto, ct);
+
+                // Handle the response as needed
+                if (response.Success)
+                {
+                    return Ok(response.Content);
+                }
+                else
+                {
+                    return BadRequest(response.ErrorMessage);
+                }
             }
-            return StatusCode(501, "It was not possible to create the file");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

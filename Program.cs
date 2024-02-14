@@ -13,6 +13,7 @@ using ShoppingProject.Models;
 using ShoppingProject.Repositories;
 using ShoppingProject.Services;
 using System.Security.Claims;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -129,6 +130,11 @@ builder.Services.AddCors(options =>
                    .SetIsOriginAllowedToAllowWildcardSubdomains()
                    .AllowCredentials();
                });
+});
+builder.Services.AddAzureClients(clientBuilder =>
+{
+    clientBuilder.AddBlobServiceClient(builder.Configuration["ConnectionStrings:BlobStorage:blob"], preferMsi: true);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["ConnectionStrings:BlobStorage:queue"], preferMsi: true);
 });
 
 

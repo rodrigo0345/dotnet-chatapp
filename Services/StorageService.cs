@@ -1,76 +1,74 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using ShoppingProject.Dtos.File;
 using ShoppingProject.Helpers;
 using ShoppingProject.Interfaces;
 using static ShoppingProject.Services.StorageService;
 
 namespace ShoppingProject.Services
 {
-    public class StorageService: IStorageService
+    public class StorageService(IConfiguration configuration) : IStorageService
     {
+        private IConfiguration _configuration = configuration;
 
-            private readonly BlobServiceClient _BlobServiceClient;
-
-            public StorageService(BlobServiceClient blobServiceClient)
-            {
-                _BlobServiceClient = blobServiceClient;
-            }
-
-        public async Task<ResponseApp<Stream>> GetBlobAsync(string path, string groupId, CancellationToken cancellationToken = default)
+        public async Task<ResponseApp<string>> UploadAsync(FileDto file, CancellationToken ct = default)
         {
-            var clientContainer = _BlobServiceClient.GetBlobContainerClient(groupId);
+            string filename = $"{Guid.NewGuid().ToString().Replace("-", "")}.{file.Extension}";
+            string uri = _configuration.GetConnectionString("BlobStorage")!;
+            string containerName = file.GroupId.ToString();
 
-            var blobClient = clientContainer.GetBlobClient("videos");
-            var result = await blobClient.DownloadToAsync(path, cancellationToken);
+            var blobServiceClient = new BlobServiceClient(uri);
 
-            if (result.Status != 200 || result.ContentStream == null)
+            // Get a reference to the container
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+            // Create the container if it doesn't exist
+            await blobContainerClient.CreateIfNotExistsAsync(publicAccessType: Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+
+            // Get a reference to the blob
+            var blobClient = blobContainerClient.GetBlobClient(filename);
+
+            var blobUploadOptions = new BlobUploadOptions
             {
-                return new ResponseApp<Stream>
-                {
-                    ErrorMessage = $"Error downloading file. Status: {result.Status}"
-                };
+                HttpHeaders = new BlobHttpHeaders { ContentType = this.GetContentType(file.Extension) }
+            };
+
+            await using (Stream? data = file.Stream.OpenReadStream()!)
+            {
+                await blobClient.UploadAsync(data, blobUploadOptions, ct);
             }
 
-            return new ResponseApp<Stream>
+            // Return the URL of the uploaded blob
+            string blobUrl = blobClient.Uri.ToString();
+            return new ResponseApp<string>()
             {
+                Content = blobUrl,
                 Success = true,
-                Content = result.ContentStream
             };
         }
-
-        public async Task<string> ListAllBlobInfo(string groupId)
+        private string GetContentType(string fileExtension)
         {
-            // Implement the logic to list blob information here
-            // You might want to return a list of blob information or other relevant data
-            throw new NotImplementedException();
-        }
-
-        public async Task<ResponseApp<string>> StoreBlobAsync(Stream blob, string groupId)
-        {
-            // Consider using a GUID for a more robust blob ID generation
-            string blobID = $"{groupId}/{Guid.NewGuid()}";
-
-            // Connect to the Azure Blob Storage container
-            var clientContainer = _BlobServiceClient.GetBlobContainerClient(groupId);
-
-            // Create a block blob client
-            var blobClient = clientContainer.GetBlobClient(blobID);
-
-            // Upload the content stream to Azure Blob Storage
-            var result = await blobClient.UploadAsync(blob, true);
-
-            if (result.GetRawResponse().Status != 201)
+            if (string.IsNullOrEmpty(fileExtension))
             {
-                return new ResponseApp<string>
-                {
-                    ErrorMessage = $"Error uploading file. Status: {result.GetRawResponse().Status}"
-                };
+                return "application/octet-stream"; // Default content type for unknown extensions
             }
 
-            return new ResponseApp<string>
+            if (fileExtension.StartsWith("."))
             {
-                Success = true,
-                Content = blobID,
-            };
+                fileExtension = fileExtension.Substring(1); // Remove leading dot
+            } else
+            {
+                fileExtension = "." + fileExtension;
+            }
+
+            var contentTypeProvider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+
+            if (contentTypeProvider.TryGetContentType(fileExtension, out var contentType))
+            {
+                return contentType;
+            }
+
+            return "application/octet-stream"; // Default content type if mapping not found
         }
     }
 }
