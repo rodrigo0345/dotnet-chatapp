@@ -6,7 +6,7 @@ import { UseFormHandleSubmit, set } from "react-hook-form";
 import { toast } from "react-toastify";
 import InvitesList from "./InvitesList";
 import { InviteToChatType, UserService } from "../Services/UserService";
-import { CiSearch } from "react-icons/ci";
+import { CiImageOn, CiSearch } from "react-icons/ci";
 import { ChatService } from "../Services/ChatService";
 import { IoIosAdd } from "react-icons/io";
 import {
@@ -24,6 +24,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IoSend } from "react-icons/io5";
 
 export default function ChatList({
   setSelectedChat,
@@ -89,46 +90,56 @@ export default function ChatList({
             onOpenChange={setIsNewChatModalOpen}
           >
             <DialogContent>
-              <p>Dialog content</p>
               <DialogHeader>
-                <DialogTitle>Edit profile</DialogTitle>
+                <DialogTitle>New Chat</DialogTitle>
                 <DialogDescription>
-                  Make changes to your profile here. Click save when you're
-                  done.
+                  Add a new chat group and invite all of your friends to join.
                 </DialogDescription>
               </DialogHeader>
-              {isNewChatModalOpen && (
-                <form
-                  method={`${api}/api/group`}
-                  action="POST"
-                  className="flex flex-col gap-2 py-1"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    createChatModule(new FormData(e.target as HTMLFormElement));
-                  }}
-                >
-                  <input
-                    className="p-1 text-sm text-black outline-none"
-                    type="text"
-                    placeholder="Chat name"
-                    name="name"
-                    required
-                  />
-                  <input
-                    type="text"
-                    className="p-1 text-sm text-black outline-none"
-                    placeholder="Image url"
-                    name="logo"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="bg-green-500 font-medium hover:bg-green-600"
+              <DialogDescription>
+                {isNewChatModalOpen && (
+                  <form
+                    method={`${api}/api/group`}
+                    action="POST"
+                    className="flex flex-col gap-2 py-1"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      createChatModule(
+                        new FormData(e.target as HTMLFormElement)
+                      );
+                    }}
                   >
-                    Create
-                  </button>
-                </form>
-              )}
+                    <div className="flex items-center">
+                      <input
+                        className="p-1 text-base text-black outline-none"
+                        type="text"
+                        placeholder="Chat name"
+                        name="name"
+                        required
+                      />
+                      <input
+                        id="logo"
+                        type="file"
+                        className="hidden p-1 text-sm text-black outline-none"
+                        placeholder="Image url"
+                        name="logo"
+                        required
+                      />
+                      <label htmlFor="logo" className="cursor-pointer">
+                        <div className="bg-slate-900 text-sm px-2 py-2  h-full flex items-center justify-center relative rounded-md text-gray-300 hover:brightness-125 transition-all">
+                          <CiImageOn size={18} />
+                        </div>
+                      </label>
+                    </div>
+                    <button
+                      type="submit"
+                      className="bg-slate-900 shadow-md mt-4 w-fit px-2 py-1 rounded-md text-white font-medium hover:brightness-150 transition-all text-gray-300"
+                    >
+                      Create
+                    </button>
+                  </form>
+                )}
+              </DialogDescription>
             </DialogContent>
           </Dialog>
         </section>
