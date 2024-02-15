@@ -76,9 +76,7 @@ const ScrollContainer = ({
           pointerEvents: showScrollButton ? "auto" : "none",
         }}
         onClick={handleScrollButtonClick}
-      >
-        New message!
-      </button>
+      ></button>
     </div>
   );
 };

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../Context/useAuth";
-import { MessageType } from "../Services/ChatService";
+import { MessageEnum, MessageType } from "../Services/ChatService";
 import { set } from "react-hook-form";
 import { Separator } from "@/components/ui/separator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { FaPause, FaPlay } from "react-icons/fa";
 
 export default function Message({
   message,
@@ -17,6 +18,7 @@ export default function Message({
   const { user } = useAuth();
   const [groupMessages, setGroupMessages] = useState<boolean>(false);
   const [isAnotherDay, setIsAnotherDay] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   useEffect(() => {
     const currentMessageCreatedOn = new Date(message.createdOn);
@@ -68,7 +70,6 @@ export default function Message({
   }
 
   if (user?.id === message.senderId) {
-    if (message.content.trim().length === 0) return null;
     return (
       <>
         {isAnotherDay && lastMessage?.createdOn && (
@@ -95,13 +96,45 @@ export default function Message({
           `}
           >
             <div className="flex items-center justify-end gap-1 px-1">
-              {message.attachment.trim().length !== 0 && (
-                <img
-                  src={message.attachment}
-                  alt=""
-                  className="rounded-lg max-w-40"
-                />
-              )}
+              {message.attachment.trim().length !== 0 &&
+                message.type == MessageEnum.Image && (
+                  <img
+                    src={message.attachment}
+                    alt=""
+                    className="rounded-lg w-40"
+                  />
+                )}
+              {message.attachment.trim().length !== 0 &&
+                message.type == MessageEnum.Video && (
+                  <div className="flex items-center justify-center h-full max-w-96 relative pl-10">
+                    <video
+                      id="video-01"
+                      className="object-cover h-full w-full rounded-md"
+                      loop
+                      src={message?.attachment}
+                      controls
+                    ></video>
+
+                    <button
+                      className="absolute h-10 w-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-200"
+                      onClick={() => {
+                        const videoElement: any =
+                          document.getElementById("video-01");
+
+                        if (videoElement.paused) {
+                          videoElement.play();
+                          setIsPlaying(true);
+                        } else {
+                          videoElement.pause();
+                          setIsPlaying(false);
+                        }
+                      }}
+                    >
+                      {!isPlaying && <FaPlay size={25} />}
+                      {isPlaying && <FaPause size={25} />}
+                    </button>
+                  </div>
+                )}
             </div>
             <p className="text-xs font-normal w-14 text-end text-gray-400"></p>
           </div>
@@ -145,19 +178,52 @@ export default function Message({
         </div>
       )}
       <div
-        className={`w-full flex justify-end relative
+        className={`w-full flex justify-start relative
             ${groupMessages ? "mt-2" : "mt-4"}
           `}
       >
-        <div className="flex items-center justify-start gap-1 pl-10 w-full">
-          {message.attachment.trim().length !== 0 && (
-            <img
-              src={message.attachment}
-              alt=""
-              className="rounded-lg max-w-40"
-            />
+        {message.attachment.trim().length !== 0 &&
+          message.type == MessageEnum.Image && (
+            <div className="flex items-center justify-start gap-1 pl-10 w-full">
+              {message.attachment.trim().length !== 0 && (
+                <img
+                  src={message.attachment}
+                  alt=""
+                  className="rounded-lg max-w-40"
+                />
+              )}
+            </div>
           )}
-        </div>
+        {message.attachment.trim().length !== 0 &&
+          message.type == MessageEnum.Video && (
+            <div className="flex items-end justify-end h-full w-96 relative pl-10">
+              <video
+                id="video-01"
+                className="object-cover h-full w-full rounded-md"
+                loop
+                src={message?.attachment}
+                controls
+              ></video>
+
+              <button
+                className="absolute h-10 w-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-200"
+                onClick={() => {
+                  const videoElement: any = document.getElementById("video-01");
+
+                  if (videoElement.paused) {
+                    videoElement.play();
+                    setIsPlaying(true);
+                  } else {
+                    videoElement.pause();
+                    setIsPlaying(false);
+                  }
+                }}
+              >
+                {!isPlaying && <FaPlay size={25} />}
+                {isPlaying && <FaPause size={25} />}
+              </button>
+            </div>
+          )}
         <p className="text-xs font-normal w-14 text-end text-gray-400"></p>
       </div>
       <div

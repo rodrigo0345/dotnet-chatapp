@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using Azure.Core;
 using chatapp.Dtos.Message;
 using chatapp.Helpers;
 using chatapp.Repositories;
@@ -22,6 +23,11 @@ namespace chatapp.Controllers
         public async Task<IActionResult> CreateMessage([FromBody] CreateMessageDto dto, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if(String.IsNullOrEmpty(dto.Content) && String.IsNullOrEmpty(dto.Attachment))
+            {
+                return BadRequest("Invalid message");
+            }
                 
             if(!String.IsNullOrEmpty(dto.SenderId))
             {
@@ -77,12 +83,17 @@ namespace chatapp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMessages([FromQuery] MessageQueryObject queryObject, CancellationToken ct)
         {
+            var delay = Task.Delay(100000);
+
             var result = await _messageRepository.getAllAsync(queryObject, ct);
+
+            await delay;
             if (result != null)
             {
                 return Ok(result);
             }
             return StatusCode(500, "It was not possible to get the messages");
+
         }
     }
 }

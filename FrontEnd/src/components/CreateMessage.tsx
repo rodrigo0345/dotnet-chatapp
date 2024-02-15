@@ -162,7 +162,6 @@ export default function CreateMessage({
     const formData = new FormData(e.currentTarget);
     const content = formData.get("content");
 
-    console.log({ rawFile, content });
     const type = checkAttachmentType(loadedAttachment?.path.toString() || "");
 
     let attachmentUrl = "";
@@ -194,7 +193,7 @@ export default function CreateMessage({
   };
 
   return (
-    <div className="row-span-1 self-end relative flex flex-col gap-2">
+    <div className="relative flex flex-col gap-2">
       {loadingAttachment > 0.0 && (
         <div className="px-3 py-3 mx-6 bg-slate-600/20 rounded-xl flex items-center justify-start shadow-lg w-fit absolute z-10 -translate-y-40 top-0 backdrop-blur-lg">
           {loadingAttachment !== 100 ? (
@@ -302,7 +301,7 @@ export default function CreateMessage({
           )}
         </div>
       )}
-      <div className="flex self-end bg-zinc-950/30 justify-center w-full items-center p-2 rounded-lg border border-slate-700/80 shadow-lg">
+      <div className="flex bg-zinc-950/30 justify-center items-center p-2 rounded-md border border-slate-700/80 shadow-lg w-full">
         <div className="text-white w-10 h-10 flex items-center justify-center rounded-full">
           <TooltipProvider>
             <Tooltip>

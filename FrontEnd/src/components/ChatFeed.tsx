@@ -20,6 +20,7 @@ export default function ChatFeed({
   userService: UserService;
 }) {
   const [height, setHeight] = useState(0);
+  const [loading, setLoading] = useState(true);
   const ref = useRef<any>(null);
 
   useEffect(() => {
@@ -27,9 +28,11 @@ export default function ChatFeed({
   });
 
   useEffect(() => {
+    if (messages.length === 0) setLoading(true);
     chatService.getChatMessages(group.chatGroup.id).then((messages) => {
       if (messages) setMessages(messages.data.reverse());
       userService.saveLastOpenChat(group.chatGroup.id);
+      setLoading(false);
     });
 
     // realtime updates
@@ -53,8 +56,15 @@ export default function ChatFeed({
     //   className={`h-[630px] row-span-7 w-full rounded-md text-gray-300 mt-4 px-4`}
     // >
     <ScrollContainer
-      className={`h-[630px] row-span-7 w-full rounded-md text-gray-300 mt-4 px-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900`}
+      className={`h-[630px] row-span-7 rounded-md text-gray-300 grow py-4 px-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900 relative w-full`}
     >
+      {loading && (
+        <img
+          src="/loading.gif"
+          alt="loading cat"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full z-50 bg-slate-950/80 backdrop-blur-lg"
+        />
+      )}
       {messages.map((message, index) => (
         <Message
           key={index}
