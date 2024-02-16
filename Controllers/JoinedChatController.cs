@@ -58,7 +58,7 @@ namespace chatapp.Controllers
             {
                 return Ok(result);
             }
-            return StatusCode(500, "It was not possible to create the message");
+            return StatusCode(500, "It was not possible to join the chat");
         }
 
         [HttpPost("invite")]

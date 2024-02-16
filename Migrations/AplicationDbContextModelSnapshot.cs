@@ -50,13 +50,13 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a20bca6d-fb99-4f7b-a101-05cd8c055383",
+                            Id = "bc30bfd0-bd03-4b7e-87cf-ab87f7ec25bf",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "ab9f5cdc-fe99-4f42-bc22-bb6e38690024",
+                            Id = "e2f2bd42-12d9-41c0-a18b-9602d58c6c5d",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -151,8 +151,8 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "8693e2cb-c9be-4360-98f5-a3950cc104a6",
-                            RoleId = "a20bca6d-fb99-4f7b-a101-05cd8c055383"
+                            UserId = "d841a1b7-acc8-445a-8f09-b5203a2ad657",
+                            RoleId = "bc30bfd0-bd03-4b7e-87cf-ab87f7ec25bf"
                         });
                 });
 
@@ -245,18 +245,18 @@ namespace ShoppingProject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8693e2cb-c9be-4360-98f5-a3950cc104a6",
+                            Id = "d841a1b7-acc8-445a-8f09-b5203a2ad657",
                             AccessFailedCount = 0,
                             Bio = "I am the admin",
-                            ConcurrencyStamp = "826c738a-4bc4-48d8-a0fa-7e3e97f4ede2",
+                            ConcurrencyStamp = "002d795e-9863-43be-8ea3-daff5138ab01",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDWxdcbUgfHDEnsBsm68ZP2BwOWLJZLwCsGi/BR3ioB516dd82Bdz2RR41ql5uT0Lg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMW13Nboyb9OlBORNyGeU/aNeQVSyOx1c5QN3VYab/4o4Jb7ojBzfKrf5UB4ldi6tQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "27cea369-bb80-443a-b25d-72494272c641",
+                            SecurityStamp = "7a00c273-e078-44d5-811e-f9f26f43a67a",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -303,6 +303,9 @@ namespace ShoppingProject.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsBanned")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("SeenLastMessage")
                         .HasColumnType("boolean");
 
                     b.Property<string>("UserId")

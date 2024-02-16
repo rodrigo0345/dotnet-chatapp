@@ -83,11 +83,8 @@ namespace chatapp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMessages([FromQuery] MessageQueryObject queryObject, CancellationToken ct)
         {
-            var delay = Task.Delay(100000);
-
             var result = await _messageRepository.getAllAsync(queryObject, ct);
 
-            await delay;
             if (result != null)
             {
                 return Ok(result);

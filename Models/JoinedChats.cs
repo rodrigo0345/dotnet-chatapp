@@ -23,5 +23,6 @@ namespace chatapp.Models
         public bool IsAccepted { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsBanned { get; set; }
+        public bool SeenLastMessage { get; set; }
     }
 }

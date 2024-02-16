@@ -27,6 +27,7 @@ export default function InvitesList({
     getInvites().then((invites) => {
       setInvites(invites.data);
     });
+    userService.listenForPersonalEvents(userService._userId, setInvites);
   }, []);
 
   return (

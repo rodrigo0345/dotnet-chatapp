@@ -23,13 +23,14 @@ import { IoIosAdd, IoIosSave, IoMdCall, IoMdSettings } from "react-icons/io";
 import { IoChatboxSharp, IoSend } from "react-icons/io5";
 import { CiSearch } from "react-icons/ci";
 import { MdEdit } from "react-icons/md";
+import { InviteToChat } from "./InviteToChat";
 
 export default function Chat({
   selectedChat,
   chatService,
   userService,
 }: {
-  selectedChat: InviteToChatType;
+  selectedChat?: InviteToChatType | null;
   chatService: ChatService;
   userService: UserService;
 }) {
@@ -37,8 +38,10 @@ export default function Chat({
 
   useEffect(() => {
     return () => {
-      chatService.leaveChatRoom(selectedChat.chatGroup.id);
       setMessages([]);
+
+      if (!selectedChat) return;
+      chatService.leaveChatRoom(selectedChat.chatGroup.id);
     };
   }, [selectedChat]);
 
@@ -124,26 +127,10 @@ export default function Chat({
               ></CreateMessage>
             </TabsContent>
             <TabsContent value="settings" className="relative grow h-full">
-              <section className="px-4 py-4 flex flex-col gap-2">
-                <h3 className="text-2xl font-semibold text-gray-300">
-                  Invite User
-                </h3>
-                <div className="flex items-center relative h-fit">
-                  <div className="flex rounded-md items-center px-2 pl-4 py-2 gap-2 bg-slate-900">
-                    <input
-                      type="text"
-                      className="text-sm text-gray-200 outline-none bg-transparent w-60"
-                      placeholder="Username or Email"
-                    />
-                  </div>
-                  <button
-                    onClick={() => {}}
-                    className="bg-blue-950/80 text-sm px-2 py-2  h-full flex items-center justify-center relative rounded-md text-gray-300 hover:brightness-125 transition-all"
-                  >
-                    <IoSend size={20} />
-                  </button>
-                </div>
-              </section>
+              <InviteToChat
+                chatGroupId={selectedChat.chatGroup.id}
+                chatService={chatService}
+              ></InviteToChat>
               <section className="px-4 py-4 flex flex-col gap-2">
                 <h3 className="text-2xl font-semibold text-gray-300">
                   Chat Settings

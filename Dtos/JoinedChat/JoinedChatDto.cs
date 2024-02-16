@@ -20,5 +20,7 @@ namespace chatapp.Dtos.Message
         public bool IsAdmin { get; set; }
         public bool IsBanned { get; set; }
         public string UserId { get; set; } = String.Empty;
+        public MessageDto? LastMessage { get; set; }
+        public bool SeenLastMessage { get; set; } = true;
     }
 }

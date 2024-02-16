@@ -8,6 +8,7 @@ using chatapp.Helpers;
 using chatapp.Models;
 using Microsoft.EntityFrameworkCore;
 using ShoppingProject.Data;
+using ShoppingProject.Helpers;
 using ShoppingProject.Models;
 
 namespace chatapp.Repositories
@@ -118,18 +119,32 @@ namespace chatapp.Repositories
             }
 
 
-            query = query.Skip((queryObject.Page - 1) * queryObject.PageSize).Take(queryObject.PageSize);
+            query = query.OrderBy(c => !c.SeenLastMessage);
 
-            var result = (await query.ToListAsync()).Select(m => new JoinedChatDto
+            var result = await query
+                .Skip((queryObject.Page - 1) * queryObject.PageSize)
+                .Take(queryObject.PageSize)
+                .ToListAsync();
+
+            var chatGroupIds = result.Select(m => m.ChatGroupId).ToArray();
+
+            var lastMessages = await _context.Messages
+                .Where(msg => chatGroupIds.Contains(msg.ChatGroupId))
+                .GroupBy(msg => msg.ChatGroupId)
+                .Select(group => group.OrderByDescending(msg => msg.CreatedOn).FirstOrDefault())
+                .ToListAsync();
+
+            var joinedChatDtos = result.Select(m => new JoinedChatDto
             {
                 Id = m.Id,
                 ChatGroup = m.ChatGroup,
                 IsAccepted = m.IsAccepted,
                 IsAdmin = m.IsAdmin,
-                IsBanned = m.IsBanned
-            });
+                IsBanned = m.IsBanned,
+                LastMessage = lastMessages.FirstOrDefault(msg => msg?.ChatGroupId == m.ChatGroupId)?.ToDto()
+            }).ToList();
 
-            return result.ToList();
+            return joinedChatDtos;
         }
 
         public async Task<JoinedChatDto?> getOneAsync(Guid id, CancellationToken cancellationToken = default)
@@ -141,6 +156,8 @@ namespace chatapp.Repositories
                 return null;
             }
 
+            var lastMessage = await _context.Messages.OrderBy(m => m.CreatedOn).LastOrDefaultAsync(m => m.ChatGroupId == found.ChatGroupId, cancellationToken);
+
             return new JoinedChatDto
             {
                 Id = found.Id,
@@ -148,7 +165,8 @@ namespace chatapp.Repositories
                 IsAccepted = found.IsAccepted,
                 IsAdmin = found.IsAdmin,
                 UserId = found.UserId,
-                IsBanned = found.IsBanned
+                IsBanned = found.IsBanned,
+                LastMessage = lastMessage?.ToDto()
             };
         }
 

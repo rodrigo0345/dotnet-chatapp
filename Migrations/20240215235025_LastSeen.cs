@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ShoppingProject.Migrations
 {
     /// <inheritdoc />
-    public partial class _0 : Migration
+    public partial class LastSeen : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -189,7 +189,8 @@ namespace ShoppingProject.Migrations
                     ChatGroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsAccepted = table.Column<bool>(type: "boolean", nullable: false),
                     IsAdmin = table.Column<bool>(type: "boolean", nullable: false),
-                    IsBanned = table.Column<bool>(type: "boolean", nullable: false)
+                    IsBanned = table.Column<bool>(type: "boolean", nullable: false),
+                    SeenLastMessage = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -216,7 +217,7 @@ namespace ShoppingProject.Migrations
                     Content = table.Column<string>(type: "text", nullable: false),
                     Attachment = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", rowVersion: true, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ChatGroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     SenderId = table.Column<string>(type: "text", nullable: false)
                 },
@@ -242,19 +243,19 @@ namespace ShoppingProject.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "8ae562fa-6dd5-45fa-adc2-396e7241845f", null, "User", "USER" },
-                    { "94d9820c-21b8-4382-b739-f2179e99e1cc", null, "Admin", "ADMIN" }
+                    { "bc30bfd0-bd03-4b7e-87cf-ab87f7ec25bf", null, "Admin", "ADMIN" },
+                    { "e2f2bd42-12d9-41c0-a18b-9602d58c6c5d", null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "Bio", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "cdbd8300-c873-455b-9bbd-5243b4349be4", 0, "I am the admin", "348e89f8-4a97-48c3-9fd8-add7d04385db", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEP2v/k9+lx+i1y/E+X5S+6U6meZEw8Sqp++B+OGQvRrqGvZFLJCfcuC3wv+K2035Cw==", null, false, "5cd978fd-e2e6-4592-a23f-d0cb9a50b78b", false, "admin" });
+                values: new object[] { "d841a1b7-acc8-445a-8f09-b5203a2ad657", 0, "I am the admin", "002d795e-9863-43be-8ea3-daff5138ab01", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEMW13Nboyb9OlBORNyGeU/aNeQVSyOx1c5QN3VYab/4o4Jb7ojBzfKrf5UB4ldi6tQ==", null, false, "7a00c273-e078-44d5-811e-f9f26f43a67a", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "94d9820c-21b8-4382-b739-f2179e99e1cc", "cdbd8300-c873-455b-9bbd-5243b4349be4" });
+                values: new object[] { "bc30bfd0-bd03-4b7e-87cf-ab87f7ec25bf", "d841a1b7-acc8-445a-8f09-b5203a2ad657" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -299,9 +300,10 @@ namespace ShoppingProject.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JoinedChats_ChatGroupId",
+                name: "IX_JoinedChats_ChatGroupId_UserId",
                 table: "JoinedChats",
-                column: "ChatGroupId");
+                columns: new[] { "ChatGroupId", "UserId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_JoinedChats_UserId",

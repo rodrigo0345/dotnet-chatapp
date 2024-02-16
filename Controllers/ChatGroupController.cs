@@ -44,7 +44,7 @@ namespace chatapp.Controllers
             {
                 return Ok(result);
             }
-            return StatusCode(501, "It was not possible to create the message");
+            return StatusCode(501, "It was not possible to create the group");
         }
 
         [HttpPut]

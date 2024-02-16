@@ -16,5 +16,6 @@ namespace chatapp.Dtos.Message
         public bool IsAccepted { get; set; } = true;
         public bool IsAdmin { get; set; } = true;
         public bool IsBanned { get; set; } = false;
+        public bool SeenLastMessage { get; set; } = false;
     }
 }

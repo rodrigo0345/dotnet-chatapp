@@ -20,21 +20,35 @@ export type InviteToChatType = {
   isAccepted: boolean;
   isAdmin: boolean;
   isBanned: boolean;
+  lastMessage: {
+    id: string;
+    chatGroupId: string;
+    senderId: string;
+    content: string;
+    attachment: string;
+    type: number;
+    createdOn: string;
+  };
+  seenLastMessage: boolean;
 };
 
 export class UserService {
+  _connection: signalR.HubConnection;
   _token: string;
   _userId: string;
   _serverUrl: string;
+  _isListening: boolean = false;
 
   constructor(
     userId: string,
     token: string,
+    connection: signalR.HubConnection,
     serverUrl: string = "http://localhost:5100/api"
   ) {
     this._token = token;
     this._serverUrl = serverUrl;
     this._userId = userId;
+    this._connection = connection;
   }
 
   saveLastOpenChat = (chatId: string) => {
@@ -44,6 +58,30 @@ export class UserService {
 
   getLastOpenChat = () => {
     return localStorage.getItem("lastChat");
+  };
+
+  listenForPersonalEvents = async (
+    userId: string,
+    setInvites: (m: any) => any
+  ) => {
+    if (this._isListening) return;
+
+    try {
+      await this._connection.start();
+    } catch (e) {
+      console.error(e);
+    }
+
+    this._connection.on("ChatGroupInvite", (message: InviteToChatType) => {
+      setInvites((prev: InviteToChatType[]) => {
+        if (prev.some((m) => m.id === message.id)) {
+          return prev;
+        }
+        return [...prev, message];
+      });
+    });
+
+    this._isListening = true;
   };
 
   getMyChats = async (): Promise<AxiosResponse<InviteToChatType[], any>> => {

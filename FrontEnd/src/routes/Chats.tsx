@@ -10,6 +10,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import * as signalR from "@microsoft/signalr";
 
 export default function Chats() {
   const { user, getToken, logout } = useAuth();
@@ -22,6 +23,7 @@ export default function Chats() {
   const [userService, setUserService] = useState<UserService | null>();
 
   useEffect(() => {
+    const serverUrl = "http://localhost:5100/api";
     const token = getToken();
     const userId = user?.id;
 
@@ -30,8 +32,15 @@ export default function Chats() {
       return;
     }
 
-    const cs = new ChatService(userId, token);
-    const us = new UserService(userId, token);
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(`${serverUrl}/chatHub`, {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets,
+      })
+      .withAutomaticReconnect()
+      .build();
+    const cs = new ChatService(userId, token, connection, serverUrl);
+    const us = new UserService(userId, token, connection, serverUrl);
 
     setChatService(cs);
     setUserService(us);
@@ -54,8 +63,7 @@ export default function Chats() {
     };
   }, []);
 
-  if (!chatService || !userService || !selectedChat)
-    return <div>Loading...</div>;
+  if (!chatService || !userService) return <div>Loading...</div>;
 
   return (
     <div className="grid grid-flow-row grid-cols-6 h-full relative  p-6 font-customFont bg-gradient-to-tl from-gray-700/60 to-slate-950">

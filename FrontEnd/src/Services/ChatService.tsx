@@ -40,8 +40,7 @@ export type MessageType = {
 };
 
 export class ChatService {
-  connection: signalR.HubConnection;
-
+  _connection: signalR.HubConnection;
   _token: string;
   _isListening = false;
   _serverUrl: string;
@@ -50,18 +49,13 @@ export class ChatService {
   constructor(
     userId: string,
     token: string,
+    connection: signalR.HubConnection,
     serverUrl: string = "http://localhost:5100/api"
   ) {
-    this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${serverUrl}/chatHub`, {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets,
-      })
-      .withAutomaticReconnect()
-      .build();
     this._token = token;
     this._serverUrl = serverUrl;
     this._userId = userId;
+    this._connection = connection;
   }
 
   getChatMessages = async (
@@ -85,10 +79,10 @@ export class ChatService {
   };
 
   sendMessage = async (message: MessageCreateType) => {
-    if (!this.connection.state) await this.connection.start();
+    if (!this._connection.state) await this._connection.start();
     try {
       message.senderId = this._userId;
-      await this.connection.invoke("SendMessage", message);
+      await this._connection.invoke("SendMessage", message);
     } catch (e) {
       console.error(e);
     }
@@ -100,12 +94,12 @@ export class ChatService {
     console.log({ chatGroupId });
 
     try {
-      await this.connection.start();
+      await this._connection.start();
     } catch (e) {
       console.error(e);
     }
 
-    this.connection.on("ReceiveMessage", (message: MessageType) => {
+    this._connection.on("ReceiveMessage", (message: MessageType) => {
       setMessages((prev: MessageType[]) => {
         if (prev.some((m) => m.id === message.id)) {
           return prev;
@@ -115,7 +109,7 @@ export class ChatService {
     });
 
     try {
-      await this.connection.invoke("JoinChat", this._userId, chatGroupId);
+      await this._connection.invoke("JoinChat", this._userId, chatGroupId);
       this._isListening = true;
     } catch (e) {}
   };
@@ -123,7 +117,7 @@ export class ChatService {
   leaveChatRoom = async (chatGroupId: string) => {
     try {
       this._isListening = false;
-      await this.connection.invoke("LeaveChat", this._userId, chatGroupId);
+      await this._connection.invoke("LeaveChat", this._userId, chatGroupId);
     } catch (e) {
       console.error(e);
     }
@@ -143,7 +137,7 @@ export class ChatService {
           },
         }
       );
-      toast.success("Invited");
+      toast.success(`Invited ${username}`);
       return invite;
     } catch (e: any) {
       const { request } = handleError(e);

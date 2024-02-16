@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IoSend } from "react-icons/io5";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ChatList({
   setSelectedChat,
@@ -43,18 +44,22 @@ export default function ChatList({
 
   const createChatModule = async (formData: FormData) => {
     const name = formData.get("name")?.toString();
-    const logo = formData.get("logo")?.toString();
+    const formDataLogo = formData.get("logo") as File;
 
-    if (!name || !logo) return toast.error("Name and logo are required");
+    // create a id with uuid
+    const id = uuidv4();
+    const logoUrl = await chatService.uploadAttachment(formDataLogo, id);
 
-    await userService.createChat(name, logo);
+    if (!name || !logoUrl) return toast.error("Name and logo are required");
+
+    await userService.createChat(name, logoUrl);
 
     setIsNewChatModalOpen(false);
   };
 
   return (
     <div className=" col-span-2 row-span-6 h-full bg-zinc-950/30 backdrop-blur-lg  text-white mx-2 rounded-md border border-slate-700/80 shadow-lg">
-      <div className="flex flex-col gap-2 my-6">
+      <div className="flex flex-col gap-2 my-6 w-full">
         <form
           id="search-chats"
           className="flex mx-4 rounded-full items-center px-2 pl-4 py-2 gap-2 bg-slate-900"
@@ -122,6 +127,7 @@ export default function ChatList({
                         type="file"
                         className="hidden p-1 text-sm text-black outline-none"
                         placeholder="Image url"
+                        accept="image/*"
                         name="logo"
                         required
                       />
@@ -144,18 +150,20 @@ export default function ChatList({
           </Dialog>
         </section>
         {allChats?.length == 0 && allChats ? (
-          <div>No chats</div>
+          <div className="px-4 text-sm text-gray-300">No chats.</div>
         ) : (
           allChats?.map((chat: InviteToChatType) => (
             <div
-              className={`flex items-center justify-normal gap-1 px-4 py-2 ${
+              className={`flex w-full items-center justify-normal gap-1 px-4 py-2 ${
                 selectedChat?.id == chat.id
                   ? " bg-slate-800/70 "
                   : " bg-transparent"
               } `}
             >
               <div className="relative">
-                <div className="bottom-0 right-0 bg-green-400 h-2 w-2 rounded-full absolute"></div>
+                {!selectedChat?.seenLastMessage && (
+                  <div className="top-0 z-10 animate-bounce right-0 bg-green-400 h-2 w-2 rounded-full absolute"></div>
+                )}
                 <Avatar>
                   <AvatarImage
                     className="object-cover"
@@ -167,11 +175,15 @@ export default function ChatList({
               <button
                 onClick={() => setSelectedChat(chat)}
                 key={chat.id}
-                className="text-base py-1 px-2 flex flex-col rounded-md overflow-hidden "
+                className="w-full text-start text-base py-1 px-2 flex flex-col rounded-md overflow-hidden "
               >
                 <h3 className="text-sm">{chat.chatGroup.name}</h3>
-                <p className="text-nowrap w-full text-xs text-gray-400 text-ellipsis overflow-hidden">
-                  Last message, cool, I guess it is really long
+                <p
+                  className={`text-nowrap w-full text-xs text-gray-400 text-ellipsis overflow-hidden ${
+                    !selectedChat?.seenLastMessage && "font-semibold"
+                  }`}
+                >
+                  {chat.lastMessage?.content || "No messages"}
                 </p>
               </button>
             </div>
