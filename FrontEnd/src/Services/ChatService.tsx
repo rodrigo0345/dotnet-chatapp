@@ -42,7 +42,10 @@ export type MessageType = {
 export class ChatService {
   _connection: signalR.HubConnection;
   _token: string;
+
   _isListening = false;
+  _isListeningForChatChanges = false;
+
   _serverUrl: string;
   _userId: string;
 
@@ -83,9 +86,7 @@ export class ChatService {
     try {
       message.senderId = this._userId;
       await this._connection.invoke("SendMessage", message);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
   };
 
   joinChatRoom = async (
@@ -95,13 +96,9 @@ export class ChatService {
   ) => {
     if (this._isListening) return;
 
-    console.log({ chatGroupId });
-
     try {
       await this._connection.start();
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
 
     this._connection.on("ReceiveMessage", (message: MessageType) => {
       setMessages((prev: MessageType[]) => {
@@ -111,7 +108,6 @@ export class ChatService {
         return [...prev, message];
       });
       setInvite((prev: InviteToChatType[]) => {
-        console.warn({ prev });
         if (prev.some((m) => m.chatGroup.id === message.chatGroupId)) {
           return prev.map((chat) => {
             if (chat.chatGroup.id === message.chatGroupId) {
@@ -174,9 +170,7 @@ export class ChatService {
     try {
       this._isListening = false;
       await this._connection.invoke("LeaveChat", this._userId, chatGroupId);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
   };
 
   inviteToChat = async (chatGroupId: string, username: string) => {
@@ -219,25 +213,29 @@ export class ChatService {
     setAllChats: any,
     selectedChat: InviteToChatType | null
   ) => {
-    console.log("Listening ", chatGroupId);
-    this._connection.start().catch((e) => {
-      console.warn("Service 2 already started");
-      console.error(e);
-    });
+    if (this._isListeningForChatChanges) return;
+    this._connection.start().catch((e) => {});
     this._connection.on("Listening", (message: MessageType) => {
-      console.log("Listening", message);
       setAllChats((prev: InviteToChatType[]) => {
+        console.log({ prev });
         if (prev.some((m) => m.chatGroup.id === message.chatGroupId)) {
-          return prev.map((c) => {
-            if (c.chatGroup.id === message.chatGroupId) {
-              c.lastMessage = message;
-              c.seenLastMessage = selectedChat
-                ? selectedChat.chatGroup.id === message.chatGroupId
-                : false;
-              return c;
-            }
-            return c;
-          });
+          const chat = prev.find((m) => m.chatGroup.id === message.chatGroupId);
+
+          if (chat == null) return prev;
+
+          prev = prev.filter((m) => m.chatGroup.id !== message.chatGroupId);
+          return [
+            {
+              ...chat,
+              lastMessage: message,
+              seenLastMessage:
+                selectedChat &&
+                selectedChat.chatGroup.id === message.chatGroupId
+                  ? true
+                  : false,
+            },
+            ...prev,
+          ];
         }
         return prev;
       });
@@ -249,9 +247,7 @@ export class ChatService {
         this._userId,
         chatGroupId
       );
-    } catch (e) {
-      console.warn("Service 2");
-      console.error(e);
-    }
+      this._isListeningForChatChanges = true;
+    } catch (e) {}
   };
 }

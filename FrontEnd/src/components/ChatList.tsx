@@ -42,6 +42,10 @@ export default function ChatList({
 }) {
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
 
+  useEffect(() => {
+    console.log("chatList", allChats);
+  }, [allChats]);
+
   const createChatModule = async (formData: FormData) => {
     const name = formData.get("name")?.toString();
     const formDataLogo = formData.get("logo") as File;
@@ -162,7 +166,7 @@ export default function ChatList({
               } `}
             >
               <div className="relative">
-                {!selectedChat?.seenLastMessage && (
+                {!chat?.seenLastMessage && (
                   <div className="top-0 z-10 animate-bounce right-0 bg-green-400 h-2 w-2 rounded-full absolute"></div>
                 )}
                 <Avatar>
@@ -181,7 +185,7 @@ export default function ChatList({
                 <h3 className="text-sm">{chat.chatGroup.name}</h3>
                 <p
                   className={`text-nowrap w-full text-xs text-gray-400 text-ellipsis overflow-hidden ${
-                    !selectedChat?.seenLastMessage && "font-semibold"
+                    !chat?.seenLastMessage && "font-semibold"
                   }`}
                 >
                   {chat.lastMessage?.content || "No messages"}

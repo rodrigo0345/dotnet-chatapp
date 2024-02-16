@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Chat from "../components/Chat";
 import ChatList from "../components/ChatList";
 import { InviteToChatType, UserService } from "../Services/UserService";
@@ -21,27 +21,26 @@ export default function Chats() {
   const [chatList, setChatList] = useState<InviteToChatType[]>([]);
   const [chatService, setChatService] = useState<ChatService | null>();
   const [userService, setUserService] = useState<UserService | null>();
-  const [connection, _] = useState<signalR.HubConnection>(
-    new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5100/api/chatHub", {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets,
-      })
-      .build()
+  const connection: signalR.HubConnection = useMemo(
+    () =>
+      new signalR.HubConnectionBuilder()
+        .withUrl("http://localhost:5100/api/chatHub", {
+          skipNegotiation: true,
+          transport: signalR.HttpTransportType.WebSockets,
+        })
+        .build(),
+    []
   );
+  const cs = new ChatService(user?.id ?? "0", getToken(), connection);
+  const us = new UserService(user?.id ?? "0", getToken(), connection);
 
   useEffect(() => {
     const serverUrl = "http://localhost:5100/api";
-    const token = getToken();
-    const userId = user?.id;
 
-    if (!token || !userId) {
+    if (!getToken() || !user?.id) {
       logout();
       return;
     }
-
-    const cs = new ChatService(userId, token, connection, serverUrl);
-    const us = new UserService(userId, token, connection, serverUrl);
 
     setChatService(cs);
     setUserService(us);
