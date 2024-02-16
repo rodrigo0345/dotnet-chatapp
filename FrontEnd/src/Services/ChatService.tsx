@@ -88,7 +88,11 @@ export class ChatService {
     }
   };
 
-  joinChatRoom = async (chatGroupId: string, setMessages: any) => {
+  joinChatRoom = async (
+    chatGroupId: string,
+    setMessages: any,
+    setInvite: any
+  ) => {
     if (this._isListening) return;
 
     console.log({ chatGroupId });
@@ -106,12 +110,64 @@ export class ChatService {
         }
         return [...prev, message];
       });
+      setInvite((prev: InviteToChatType[]) => {
+        console.warn({ prev });
+        if (prev.some((m) => m.chatGroup.id === message.chatGroupId)) {
+          return prev.map((chat) => {
+            if (chat.chatGroup.id === message.chatGroupId) {
+              return {
+                ...chat,
+                lastMessage: message,
+                seenLastMessage: true,
+              };
+            }
+            return chat;
+          });
+        }
+      });
+
+      this.markChatAsSeen(chatGroupId);
+    });
+
+    // mark messages as seen
+    this.markChatAsSeen(chatGroupId);
+    setInvite((prev: InviteToChatType[]) => {
+      if (prev.some((m) => m.chatGroup.id === chatGroupId)) {
+        return prev.map((chat) => {
+          if (chat.chatGroup.id === chatGroupId) {
+            return {
+              ...chat,
+              seenLastMessage: true,
+            };
+          }
+          return chat;
+        });
+      }
     });
 
     try {
       await this._connection.invoke("JoinChat", this._userId, chatGroupId);
       this._isListening = true;
     } catch (e) {}
+  };
+
+  markChatAsSeen = async (chatGroupId: string) => {
+    try {
+      const data = await axios.post(
+        `${api}/chats/seen`,
+        {
+          groupId: chatGroupId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this._token}`,
+          },
+        }
+      );
+      return data;
+    } catch (e) {
+      handleError(e);
+    }
   };
 
   leaveChatRoom = async (chatGroupId: string) => {
@@ -155,6 +211,47 @@ export class ChatService {
     } catch (e) {
       handleError(e);
       return null;
+    }
+  };
+
+  listenForChatChanges = async (
+    chatGroupId: string,
+    setAllChats: any,
+    selectedChat: InviteToChatType | null
+  ) => {
+    console.log("Listening ", chatGroupId);
+    this._connection.start().catch((e) => {
+      console.warn("Service 2 already started");
+      console.error(e);
+    });
+    this._connection.on("Listening", (message: MessageType) => {
+      console.log("Listening", message);
+      setAllChats((prev: InviteToChatType[]) => {
+        if (prev.some((m) => m.chatGroup.id === message.chatGroupId)) {
+          return prev.map((c) => {
+            if (c.chatGroup.id === message.chatGroupId) {
+              c.lastMessage = message;
+              c.seenLastMessage = selectedChat
+                ? selectedChat.chatGroup.id === message.chatGroupId
+                : false;
+              return c;
+            }
+            return c;
+          });
+        }
+        return prev;
+      });
+    });
+
+    try {
+      await this._connection.invoke(
+        "ListeningForChatMessages",
+        this._userId,
+        chatGroupId
+      );
+    } catch (e) {
+      console.warn("Service 2");
+      console.error(e);
     }
   };
 }

@@ -141,7 +141,8 @@ namespace chatapp.Repositories
                 IsAccepted = m.IsAccepted,
                 IsAdmin = m.IsAdmin,
                 IsBanned = m.IsBanned,
-                LastMessage = lastMessages.FirstOrDefault(msg => msg?.ChatGroupId == m.ChatGroupId)?.ToDto()
+                LastMessage = lastMessages.FirstOrDefault(msg => msg?.ChatGroupId == m.ChatGroupId)?.ToDto(),
+                SeenLastMessage = m.SeenLastMessage
             }).ToList();
 
             return joinedChatDtos;
@@ -210,6 +211,37 @@ namespace chatapp.Repositories
             if (query == null) return null;
 
             return query.FirstOrDefault()!;
+        }
+
+        public async Task markGroupAsNotRead(Guid chatGroupId, CancellationToken ct = default)
+        {
+            var joinedChats = await _context.JoinedChats
+                .Where(jc => jc.ChatGroupId == chatGroupId)
+                .ToListAsync(ct);
+
+            foreach (var joinedChat in joinedChats)
+            {
+                joinedChat.SeenLastMessage = false;
+            }
+
+            await _context.SaveChangesAsync(ct);
+        }
+
+        public async Task<bool> markChatAsSeen(Guid chatGroupId, string userId, CancellationToken ct = default)
+        {
+            var joinedChat = await _context.JoinedChats
+                .FirstOrDefaultAsync(jc => jc.ChatGroupId == chatGroupId && jc.UserId == userId, ct);
+
+            if(joinedChat == null)
+            {
+                return false;
+            }
+
+            joinedChat.SeenLastMessage = true;
+            _context.JoinedChats.Update(joinedChat);
+
+            await _context.SaveChangesAsync(ct);
+            return true;
         }
     }
 }

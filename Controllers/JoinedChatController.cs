@@ -3,6 +3,7 @@ using chatapp.Helpers;
 using chatapp.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using ShoppingProject.Dtos.JoinedChat;
 using ShoppingProject.Repositories;
 using System.Security.Claims;
@@ -158,6 +159,31 @@ namespace chatapp.Controllers
                 return Ok(result);
             }
             return StatusCode(500, "It was not possible to get the messages");
+        }
+
+        public class ChatSeenDto
+        {
+            public Guid GroupId { get; set; } = Guid.NewGuid();
+        }
+
+        [HttpPost("seen")]
+        public async Task<IActionResult> MarkChatAsSeen([FromBody] ChatSeenDto dto, CancellationToken ct)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            if(userId == null)
+            {
+                return BadRequest("Not logged in");
+            }
+            if(dto.GroupId == Guid.Empty)
+            {
+                return BadRequest("Chat Group does not exist");
+            }
+            var result = await _joinedChatGroupRepository.markChatAsSeen(dto.GroupId, userId, ct);
+            if (result == true)
+            {
+                return Ok(result);
+            }
+            return StatusCode(500, "It was not possible to mark the chat as seen");
         }
     }
 }

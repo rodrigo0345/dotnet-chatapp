@@ -154,6 +154,7 @@ export default function ChatList({
         ) : (
           allChats?.map((chat: InviteToChatType) => (
             <div
+              key={chat.id}
               className={`flex w-full items-center justify-normal gap-1 px-4 py-2 ${
                 selectedChat?.id == chat.id
                   ? " bg-slate-800/70 "

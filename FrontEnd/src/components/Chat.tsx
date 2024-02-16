@@ -29,10 +29,12 @@ export default function Chat({
   selectedChat,
   chatService,
   userService,
+  setAllChats,
 }: {
   selectedChat?: InviteToChatType | null;
   chatService: ChatService;
   userService: UserService;
+  setAllChats: any;
 }) {
   const [messages, setMessages] = useState<MessageType[]>([]);
 
@@ -81,12 +83,14 @@ export default function Chat({
                     </div>
                   )}
                 </TabsTrigger>
-                <TabsTrigger
-                  className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1 "
-                  value="settings"
-                >
-                  <IoMdSettings />
-                </TabsTrigger>
+                {selectedChat.isAdmin && (
+                  <TabsTrigger
+                    className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1 "
+                    value="settings"
+                  >
+                    <IoMdSettings />
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               <section className="flex items-center gap-3">
@@ -113,6 +117,7 @@ export default function Chat({
               className="relative grow flex flex-col justify-between w-full"
             >
               <ChatFeed
+                setAllChats={setAllChats}
                 messages={messages}
                 setMessages={setMessages}
                 group={selectedChat}

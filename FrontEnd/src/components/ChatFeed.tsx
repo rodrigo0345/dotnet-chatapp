@@ -12,12 +12,14 @@ export default function ChatFeed({
   setMessages,
   chatService,
   userService,
+  setAllChats,
 }: {
   group: InviteToChatType;
   messages: MessageType[];
   setMessages: any;
   chatService: ChatService;
   userService: UserService;
+  setAllChats: any;
 }) {
   const [height, setHeight] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -36,7 +38,7 @@ export default function ChatFeed({
     });
 
     // realtime updates
-    chatService.joinChatRoom(group.chatGroup.id, setMessages);
+    chatService.joinChatRoom(group.chatGroup.id, setMessages, setAllChats);
 
     // cleanup
     return () => {
