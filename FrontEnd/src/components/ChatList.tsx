@@ -166,9 +166,10 @@ export default function ChatList({
               } `}
             >
               <div className="relative">
-                {!chat?.seenLastMessage && (
-                  <div className="top-0 z-10 animate-bounce right-0 bg-green-400 h-2 w-2 rounded-full absolute"></div>
-                )}
+                {!chat?.seenLastMessage &&
+                  !(selectedChat?.chatGroup.id == chat?.chatGroup.id) && (
+                    <div className="top-0 z-10 animate-bounce right-0 bg-green-400 h-2 w-2 rounded-full absolute"></div>
+                  )}
                 <Avatar>
                   <AvatarImage
                     className="object-cover"
@@ -185,7 +186,9 @@ export default function ChatList({
                 <h3 className="text-sm">{chat.chatGroup.name}</h3>
                 <p
                   className={`text-nowrap w-full text-xs text-gray-400 text-ellipsis overflow-hidden ${
-                    !chat?.seenLastMessage && "font-semibold"
+                    !chat?.seenLastMessage &&
+                    !(selectedChat?.chatGroup.id == chat?.chatGroup.id) &&
+                    "font-semibold"
                   }`}
                 >
                   {chat.lastMessage?.content || "No messages"}

@@ -248,6 +248,8 @@ export class ChatService {
         chatGroupId
       );
       this._isListeningForChatChanges = true;
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
   };
 }

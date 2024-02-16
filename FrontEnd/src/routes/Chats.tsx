@@ -19,8 +19,6 @@ export default function Chats() {
     null
   );
   const [chatList, setChatList] = useState<InviteToChatType[]>([]);
-  const [chatService, setChatService] = useState<ChatService | null>();
-  const [userService, setUserService] = useState<UserService | null>();
   const connection: signalR.HubConnection = useMemo(
     () =>
       new signalR.HubConnectionBuilder()
@@ -31,8 +29,14 @@ export default function Chats() {
         .build(),
     []
   );
-  const cs = new ChatService(user?.id ?? "0", getToken(), connection);
-  const us = new UserService(user?.id ?? "0", getToken(), connection);
+  const cs = useMemo(
+    () => new ChatService(user?.id ?? "0", getToken(), connection),
+    []
+  );
+  const us = useMemo(
+    () => new UserService(user?.id ?? "0", getToken(), connection),
+    []
+  );
 
   useEffect(() => {
     const serverUrl = "http://localhost:5100/api";
@@ -41,9 +45,6 @@ export default function Chats() {
       logout();
       return;
     }
-
-    setChatService(cs);
-    setUserService(us);
 
     // load the last opened chat
     const lchatid = us.getLastOpenChat();
@@ -58,22 +59,19 @@ export default function Chats() {
         return found ? found : chats.data[0];
       });
     });
-
-    return () => {
-      setChatService(null);
-      setUserService(null);
-    };
   }, []);
 
-  if (!chatService || !userService) return <div>Loading...</div>;
+  useEffect(() => {
+    console.log("chatList", chatList);
+  }, [chatList]);
 
   return (
     <div className="grid grid-flow-row grid-cols-6 h-full relative  p-6 font-customFont bg-gradient-to-tl from-gray-700/60 to-slate-950">
       <ResizablePanelGroup className="col-span-6" direction="horizontal">
         <ResizablePanel defaultSize={45} minSize={30} maxSize={45}>
           <ChatList
-            userService={userService}
-            chatService={chatService}
+            userService={us}
+            chatService={cs}
             selectedChat={selectedChat}
             setSelectedChat={setSelectedChat}
             allChats={chatList}
@@ -83,8 +81,8 @@ export default function Chats() {
         <ResizablePanel defaultSize={80}>
           <Chat
             setAllChats={setChatList}
-            chatService={chatService}
-            userService={userService}
+            chatService={cs}
+            userService={us}
             selectedChat={selectedChat}
           ></Chat>
         </ResizablePanel>
