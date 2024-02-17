@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@mantine/hooks": "^7.5.3",
+    "react-infinite-scroll-component": "^6.1.0"
+  }
+}

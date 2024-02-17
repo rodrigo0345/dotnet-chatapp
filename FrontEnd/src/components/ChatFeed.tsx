@@ -5,6 +5,9 @@ import Message from "./Message";
 import { InviteToChatType, UserService } from "../Services/UserService";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ScrollContainer from "./ScrollContainer";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { set } from "react-hook-form";
+import { toast } from "react-toastify";
 
 export default function ChatFeed({
   group,
@@ -21,21 +24,36 @@ export default function ChatFeed({
   userService: UserService;
   setAllChats: any;
 }) {
-  const [height, setHeight] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [height, setHeight] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [lastScrollHeight, setLastScrollHeight] = useState(0);
+
   const ref = useRef<any>(null);
 
   useEffect(() => {
-    setHeight(ref?.current?.innerHeight);
-  });
+    setHeight(ref?.current?.scrollHeight);
+  }, [ref]);
 
   useEffect(() => {
     if (messages.length === 0) setLoading(true);
-    chatService.getChatMessages(group.chatGroup.id).then((messages) => {
-      if (messages) setMessages(messages.data.reverse());
-      userService.saveLastOpenChat(group.chatGroup.id);
-      setLoading(false);
-    });
+
+    const fetchData = async () => {
+      try {
+        const result = await chatService.getChatMessages(group.chatGroup.id);
+        if (result && result.data) {
+          setMessages(result.data.reverse());
+          userService.saveLastOpenChat(group.chatGroup.id);
+        }
+        setPageNumber(1);
+      } catch (error) {
+        console.error("Error fetching initial messages:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
 
     // realtime updates
     chatService.joinChatRoom(group.chatGroup.id, setMessages, setAllChats);
@@ -44,29 +62,70 @@ export default function ChatFeed({
     return () => {
       chatService.leaveChatRoom(group.chatGroup.id);
     };
-  }, [group]);
+  }, [group, setMessages, userService, chatService, setAllChats]);
 
   const scrollToBottom = () => {
-    const chatFeed = document.getElementById("chat-feed");
-    if (chatFeed) {
-      chatFeed.scrollTop = chatFeed.scrollHeight;
+    if (ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
 
+  function handleScroll() {
+    const container = document.getElementById("scrollableDiv");
+    if (!container) return;
+
+    console.log({
+      scrollHeight: container.scrollHeight,
+      scrollTop: container.scrollTop,
+      offsetHeight: container.offsetHeight,
+    });
+    if (container.scrollTop != 0) return;
+
+    loadNextPage(container, container.scrollHeight);
+  }
+
+  const loadNextPage = (container: any, lastScrollHeight: number) => {
+    setLastScrollHeight(ref.current.scrollHeight);
+
+    chatService
+      .getChatMessages(group.chatGroup.id, pageNumber + 1)
+      .then(async (result) => {
+        await setTimeout(() => {}, 1000);
+        if (result && result.data) {
+          // Reverse the new messages and update the state
+          setMessages((prev: MessageType[]) => {
+            const aux = [...result.data, ...prev];
+
+            return aux.sort((a, b) => {
+              return (
+                new Date(a.createdOn).getTime() -
+                new Date(b.createdOn).getTime()
+              );
+            });
+          });
+
+          // Update the page number
+          setPageNumber((prev) => prev + 1);
+        }
+      });
+  };
+
+  useEffect(() => {
+    if (!ref.current) return;
+    ref.current.scrollTop =
+      ref.current.scrollHeight -
+      lastScrollHeight -
+      ref.current.offsetHeight +
+      300;
+  }, [messages]);
+
   return (
-    // <ScrollArea
-    //   className={`h-[630px] row-span-7 w-full rounded-md text-gray-300 mt-4 px-4`}
-    // >
-    <ScrollContainer
-      className={`h-[630px] row-span-7 rounded-md text-gray-300 grow py-4 px-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900 relative w-full`}
+    <div
+      id="scrollableDiv"
+      ref={ref}
+      className={`h-[630px] row-span-7 rounded-md text-gray-300 grow py-4 px-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900 relative w-full overflow-y-auto`}
+      onScroll={handleScroll}
     >
-      {loading && (
-        <img
-          src="/loading.gif"
-          alt="loading cat"
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full z-50 bg-slate-950/80 backdrop-blur-lg"
-        />
-      )}
       {messages.map((message, index) => (
         <Message
           key={index}
@@ -74,7 +133,6 @@ export default function ChatFeed({
           message={message}
         />
       ))}
-    </ScrollContainer>
-    // </ScrollArea>
+    </div>
   );
 }

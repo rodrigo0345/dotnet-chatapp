@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const ScrollContainer = ({
   children,
@@ -76,7 +77,9 @@ const ScrollContainer = ({
           pointerEvents: showScrollButton ? "auto" : "none",
         }}
         onClick={handleScrollButtonClick}
-      ></button>
+      >
+        Scroll to bottom
+      </button>
     </div>
   );
 };

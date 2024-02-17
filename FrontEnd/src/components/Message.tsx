@@ -40,7 +40,7 @@ export default function Message({
         lastMessageCreatedOn.getMilliseconds()) /
       1000; // converting to seconds
 
-    if (timeDifference > 60.0) {
+    if (timeDifference > 10.0) {
       setGroupMessages(false);
     } else if (message?.senderId === lastMessage?.senderId) {
       setGroupMessages(true);
@@ -241,7 +241,9 @@ export default function Message({
                       className="cursor-help object-cover"
                       src="https://georgiapoliticalreview.com/wp-content/uploads/2014/04/Finn-The-Human.jpg"
                     />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarFallback className="h-8 w-8 object-cover">
+                      CN
+                    </AvatarFallback>
                   </HoverCardTrigger>
                   <HoverCardContent className="bg-slate-800 border-none text-gray-300">
                     <div>
