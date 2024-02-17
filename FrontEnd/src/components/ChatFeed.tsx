@@ -28,6 +28,7 @@ export default function ChatFeed({
   const [height, setHeight] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [lastScrollHeight, setLastScrollHeight] = useState(0);
+  const [newMessageButton, setNewMessageButton] = useState(false);
 
   const ref = useRef<any>(null);
 
@@ -65,9 +66,12 @@ export default function ChatFeed({
   }, [group, setMessages, userService, chatService, setAllChats]);
 
   const scrollToBottom = () => {
-    if (ref.current) {
-      ref.current.scrollTop = ref.current.scrollHeight;
+    if (!ref.current) return;
+    if (ref.current.scrollHeight > 300) {
+      setNewMessageButton(true);
+      return;
     }
+    ref.current.scrollTop = ref.current.scrollHeight;
   };
 
   function handleScroll() {
@@ -81,10 +85,10 @@ export default function ChatFeed({
     });
     if (container.scrollTop != 0) return;
 
-    loadNextPage(container, container.scrollHeight);
+    loadNextPage();
   }
 
-  const loadNextPage = (container: any, lastScrollHeight: number) => {
+  const loadNextPage = () => {
     setLastScrollHeight(ref.current.scrollHeight);
 
     chatService
@@ -116,7 +120,9 @@ export default function ChatFeed({
       ref.current.scrollHeight -
       lastScrollHeight -
       ref.current.offsetHeight +
-      300;
+      200;
+
+    scrollToBottom();
   }, [messages]);
 
   return (
