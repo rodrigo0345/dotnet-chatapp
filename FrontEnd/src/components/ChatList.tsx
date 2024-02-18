@@ -41,10 +41,8 @@ export default function ChatList({
   allChats: InviteToChatType[];
 }) {
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
-
-  useEffect(() => {
-    console.log("chatList", allChats);
-  }, [allChats]);
+  const [visibleChats, setVisibleChats] =
+    useState<InviteToChatType[]>(allChats);
 
   const createChatModule = async (formData: FormData) => {
     const name = formData.get("name")?.toString();
@@ -61,6 +59,14 @@ export default function ChatList({
     setIsNewChatModalOpen(false);
   };
 
+  const filterChats = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase();
+    const chats = allChats.filter((chat) =>
+      chat.chatGroup.name.toLowerCase().includes(value)
+    );
+    setVisibleChats(chats);
+  };
+
   return (
     <div className=" col-span-2 row-span-6 h-full bg-zinc-950/30 backdrop-blur-lg  text-white mx-2 rounded-md border border-slate-700/80 shadow-lg">
       <div className="flex flex-col gap-2 my-6 w-full">
@@ -70,6 +76,7 @@ export default function ChatList({
         >
           <CiSearch size={15} />
           <input
+            onChange={filterChats}
             type="text"
             className="text-sm text-gray-200 outline-none bg-transparent"
             placeholder="Search chats"
@@ -153,10 +160,10 @@ export default function ChatList({
             </DialogContent>
           </Dialog>
         </section>
-        {allChats?.length == 0 && allChats ? (
+        {visibleChats?.length == 0 && visibleChats ? (
           <div className="px-4 text-sm text-gray-300">No chats.</div>
         ) : (
-          allChats?.map((chat: InviteToChatType) => (
+          visibleChats?.map((chat: InviteToChatType) => (
             <div
               key={chat.id}
               className={`flex w-full items-center justify-normal gap-1 px-4 py-2 ${

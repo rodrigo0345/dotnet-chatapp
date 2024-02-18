@@ -24,6 +24,7 @@ import { IoChatboxSharp, IoSend } from "react-icons/io5";
 import { CiSearch } from "react-icons/ci";
 import { MdEdit } from "react-icons/md";
 import { InviteToChat } from "./InviteToChat";
+import VideoCall from "./VideoCall";
 
 export default function Chat({
   selectedChat,
@@ -72,7 +73,7 @@ export default function Chat({
                 >
                   <IoChatboxSharp />
                 </TabsTrigger>
-                <TabsTrigger
+                {/* <TabsTrigger
                   className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1 "
                   value="call"
                 >
@@ -82,7 +83,7 @@ export default function Chat({
                       <IoMdCall />
                     </div>
                   )}
-                </TabsTrigger>
+                </TabsTrigger> */}
                 {selectedChat.isAdmin && (
                   <TabsTrigger
                     className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1 "
@@ -173,7 +174,9 @@ export default function Chat({
                 </button>
               </section>
             </TabsContent>
-            <TabsContent value="call"></TabsContent>
+            <TabsContent value="call">
+              <VideoCall></VideoCall>
+            </TabsContent>
           </Tabs>
         </div>
       )}
