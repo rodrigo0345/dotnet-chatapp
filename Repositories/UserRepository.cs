@@ -64,6 +64,7 @@ namespace ShoppingProject.Repositories
             {
                 Email = u.Email!,
                 Username = u.UserName!,
+                Logo = u.Logo
             }).ToList();
         }
 
@@ -76,7 +77,8 @@ namespace ShoppingProject.Repositories
             return new UserDto
             {
                 Email = found.Email!,
-                Username = found.UserName!
+                Username = found.UserName!,
+                Logo = found.Logo
             };
         }
 
@@ -89,6 +91,7 @@ namespace ShoppingProject.Repositories
             found.Email = model.Email;
             found.NormalizedEmail = model.Email.Normalize();
             found.UserName = model.Username;
+            found.Logo = model.Logo;
 
             _context.Users.Update(found);
             await _context.SaveChangesAsync(cancellationToken);
@@ -96,7 +99,8 @@ namespace ShoppingProject.Repositories
             return new UserDto
             {
                 Email = found.Email,
-                Username = found.UserName
+                Username = found.UserName,
+                Logo = found.Logo
             };
         }
         

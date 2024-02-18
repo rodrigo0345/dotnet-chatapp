@@ -75,6 +75,7 @@ export default function Chats() {
             selectedChat={selectedChat}
             setSelectedChat={setSelectedChat}
             allChats={chatList}
+            setAllChats={setChatList}
           ></ChatList>
         </ResizablePanel>
         <ResizableHandle className="bg-transparent" />

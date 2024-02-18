@@ -12,7 +12,8 @@ namespace ShoppingProject.Helpers
                 Id = user.Id!,
                 Email = user.Email!,
                 Username = user.UserName!,
-                Token = null
+                Token = null,
+                Logo = user.Logo
             };
         }
     }

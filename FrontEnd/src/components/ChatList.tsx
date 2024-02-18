@@ -26,6 +26,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IoSend } from "react-icons/io5";
 import { v4 as uuidv4 } from "uuid";
+import { ProfileOptions } from "./ProfileOptions";
 
 export default function ChatList({
   setSelectedChat,
@@ -33,16 +34,22 @@ export default function ChatList({
   chatService,
   userService,
   allChats,
+  setAllChats,
 }: {
   setSelectedChat: (chat: InviteToChatType) => void;
   selectedChat: InviteToChatType | null;
   chatService: ChatService;
   userService: UserService;
   allChats: InviteToChatType[];
+  setAllChats: any;
 }) {
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
   const [visibleChats, setVisibleChats] =
     useState<InviteToChatType[]>(allChats);
+
+  useEffect(() => {
+    setVisibleChats(allChats);
+  }, [allChats]);
 
   const createChatModule = async (formData: FormData) => {
     const name = formData.get("name")?.toString();
@@ -54,7 +61,23 @@ export default function ChatList({
 
     if (!name || !logoUrl) return toast.error("Name and logo are required");
 
-    await userService.createChat(name, logoUrl);
+    const result = await userService.createChat(name, logoUrl);
+
+    if (result) {
+      setAllChats((prev: InviteToChatType[]) => [
+        {
+          chatGroup: {
+            id: result.data.id,
+            name,
+            logo: logoUrl,
+          },
+          id: result.data.id,
+          lastMessage: result.data.lastMessage,
+          seenLastMessage: result.data.seenLastMessage,
+        },
+        ...prev,
+      ]);
+    }
 
     setIsNewChatModalOpen(false);
   };
@@ -68,7 +91,7 @@ export default function ChatList({
   };
 
   return (
-    <div className=" col-span-2 row-span-6 h-full bg-zinc-950/30 backdrop-blur-lg  text-white mx-2 rounded-md border border-slate-700/80 shadow-lg">
+    <div className="flex flex-col col-span-2 row-span-6 h-full bg-zinc-950/30 backdrop-blur-lg  text-white mx-2 rounded-md border border-slate-700/80 shadow-lg justify-between">
       <div className="flex flex-col gap-2 my-6 w-full">
         <form
           id="search-chats"
@@ -206,6 +229,10 @@ export default function ChatList({
         )}
       </div>
       <InvitesList chatService={chatService} userService={userService} />
+      <ProfileOptions
+        chatService={chatService}
+        className="self-end"
+      ></ProfileOptions>
     </div>
   );
 }

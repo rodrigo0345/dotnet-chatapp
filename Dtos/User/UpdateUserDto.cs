@@ -16,7 +16,8 @@ namespace ShoppingProject.Dtos.User
         [Required]
         public string Email { get; set; } = null!;
 
-        [Required]
         public string Bio { get; set; } = null!;
+
+        public string Logo { get; set; } = String.Empty;
     }
 }

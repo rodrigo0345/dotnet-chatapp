@@ -10,6 +10,7 @@ namespace ShoppingProject.Models
     public class AppUser : IdentityUser
     {
         public string Bio { get; set; } = String.Empty;
+        public string Logo { get; set; } = String.Empty;
 
         public List<JoinedChat> Chats { get; set; } = new List<JoinedChat>();
 
