@@ -20,6 +20,8 @@
 body{
   height: 100vh;
   max-height: var(--full-viewport-height);
+  background-color: black;
+  background-image: url("/public/cool.gif");
 }
 
 #root {

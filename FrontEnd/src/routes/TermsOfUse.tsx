@@ -9,7 +9,7 @@ export default function TermsOfUse() {
     if (!legal) return;
     legal.innerHTML = template;
   }
-  return <div onLoad={onLoad} id="legal" className="bg-white py-10"></div>;
+  return <div onLoad={onLoad} id="legal" className="bg-white py-10 px-8"></div>;
 }
 
 const template = `
