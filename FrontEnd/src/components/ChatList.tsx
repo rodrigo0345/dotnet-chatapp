@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IoSend } from "react-icons/io5";
 import { v4 as uuidv4 } from "uuid";
 import { ProfileOptions } from "./ProfileOptions";
+import { FaCrown } from "react-icons/fa";
 
 export default function ChatList({
   setSelectedChat,
@@ -205,6 +206,11 @@ export default function ChatList({
                   !(selectedChat?.chatGroup.id == chat?.chatGroup.id) && (
                     <div className="top-0 z-10 animate-bounce right-0 bg-green-400 h-2 w-2 rounded-full absolute"></div>
                   )}
+                {selectedChat?.isAdmin && (
+                  <div className="-top-1 text-yellow-500 bg-gray-700/30 z-10 -left-2 p-0.5 rounded-full absolute">
+                    <FaCrown size={13} />
+                  </div>
+                )}
                 <Avatar>
                   <AvatarImage
                     className="object-cover"
