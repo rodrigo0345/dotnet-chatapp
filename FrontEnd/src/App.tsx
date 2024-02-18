@@ -13,6 +13,7 @@ function setBodyHeight() {
 export default function App() {
   window.addEventListener("resize", setBodyHeight);
   window.addEventListener("load", setBodyHeight);
+
   return (
     <div className="h-full relative ">
       <ToastContainer />

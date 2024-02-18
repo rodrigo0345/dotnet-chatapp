@@ -28,6 +28,7 @@ import { IoSend } from "react-icons/io5";
 import { v4 as uuidv4 } from "uuid";
 import { ProfileOptions } from "./ProfileOptions";
 import { FaCrown } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export default function ChatList({
   setSelectedChat,
@@ -244,10 +245,20 @@ export default function ChatList({
         chatService={chatService}
         userService={userService}
       />
-      <ProfileOptions
-        chatService={chatService}
-        className="self-end"
-      ></ProfileOptions>
+      <div>
+        <div className="w-full flex justify-start pl-4">
+          <Link
+            to="/termsOfUse"
+            className="text-blue-400 hover:text-blue-500 underline text-xs text-center"
+          >
+            Terms of Use
+          </Link>
+        </div>
+        <ProfileOptions
+          chatService={chatService}
+          className="self-end"
+        ></ProfileOptions>
+      </div>
     </div>
   );
 }
