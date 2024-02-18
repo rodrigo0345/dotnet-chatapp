@@ -4,8 +4,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ccnd.Interfaces;
+using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 using ShoppingProject.Data;
 using ShoppingProject.Dtos.User;
@@ -13,11 +16,13 @@ using ShoppingProject.Helpers;
 using ShoppingProject.Models;
 using ShoppingProject.Repositories;
 using ShoppingProject.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ShoppingProject.Controllers
 {
     [Route("api/account")]
     [ApiController]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class AccountController : Controller
     {
 
@@ -35,6 +40,7 @@ namespace ShoppingProject.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -74,6 +80,7 @@ namespace ShoppingProject.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto login, CancellationToken ct)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -94,7 +101,8 @@ namespace ShoppingProject.Controllers
                 Id = user.Id,
                 Username = user.UserName!,
                 Email = user.Email!,
-                Token = await _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user),
+                Logo = user.Logo
             });
         }
 
@@ -128,7 +136,9 @@ namespace ShoppingProject.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateUser(UpdateUserDto dto, CancellationToken ct)
         {
-            dto.Id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            dto.Id = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
             if (dto.Id == null) return BadRequest("Error");
 

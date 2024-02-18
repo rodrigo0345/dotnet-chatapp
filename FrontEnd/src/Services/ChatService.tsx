@@ -4,6 +4,7 @@ import { api } from "./AuthService";
 import { toast } from "react-toastify";
 import * as signalR from "@microsoft/signalr";
 import { InviteToChatType } from "./UserService";
+import { UserProfile } from "@/Models/User";
 
 export enum MessageEnum {
   Text = 0,
@@ -36,6 +37,7 @@ export type MessageType = {
     email: string;
     password: string;
     bio: string;
+    logo: string;
   };
 };
 
@@ -65,6 +67,9 @@ export class ChatService {
     chatId: string,
     pageNumber: number = 1
   ): Promise<AxiosResponse<MessageType[], any>> => {
+    if (!this._token) {
+      return Promise.reject("No token");
+    }
     try {
       const data = await axios.get<MessageType[]>(
         `${api}/message?FilterValue=${chatId}&FilterBy='ChatGroupId'&ChatGroupId=${chatId}&IsDescending=true&PageSize=30&Page=${pageNumber}`,
@@ -148,6 +153,9 @@ export class ChatService {
   };
 
   markChatAsSeen = async (chatGroupId: string) => {
+    if (!this._token) {
+      return;
+    }
     try {
       const data = await axios.post(
         `${api}/chats/seen`,
@@ -174,6 +182,9 @@ export class ChatService {
   };
 
   inviteToChat = async (chatGroupId: string, username: string) => {
+    if (!this._token) {
+      return;
+    }
     try {
       const invite = await axios.post<InviteToChatType>(
         `${this._serverUrl}/chats/invite`,
@@ -250,6 +261,22 @@ export class ChatService {
       this._isListeningForChatChanges = true;
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  getPeopleInChat = async (chatGroupId: string) => {
+    try {
+      const data = await axios.get<UserProfile[]>(
+        `${api}/account?FilterBy=ChatGroupId&FilterValue=${chatGroupId}&PageSize=100&Page=1`,
+        {
+          headers: {
+            Authorization: `Bearer ${this._token}`,
+          },
+        }
+      );
+      return data;
+    } catch (e) {
+      handleError(e);
     }
   };
 }

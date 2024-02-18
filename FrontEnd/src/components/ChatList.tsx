@@ -63,7 +63,12 @@ export default function ChatList({
 
     const result = await userService.createChat(name, logoUrl);
 
+    if (result.status != 200) {
+      return toast.error("Error creating chat");
+    }
+
     if (result) {
+      console.log({ result });
       setAllChats((prev: InviteToChatType[]) => [
         {
           chatGroup: {
@@ -188,7 +193,7 @@ export default function ChatList({
         ) : (
           visibleChats?.map((chat: InviteToChatType) => (
             <div
-              key={chat.id}
+              key={chat?.id ?? "0"}
               className={`flex w-full items-center justify-normal gap-1 px-4 py-2 ${
                 selectedChat?.id == chat.id
                   ? " bg-slate-800/70 "
@@ -228,7 +233,11 @@ export default function ChatList({
           ))
         )}
       </div>
-      <InvitesList chatService={chatService} userService={userService} />
+      <InvitesList
+        setChatList={setAllChats}
+        chatService={chatService}
+        userService={userService}
+      />
       <ProfileOptions
         chatService={chatService}
         className="self-end"

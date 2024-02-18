@@ -16,7 +16,7 @@ import { MdEdit, MdLogout } from "react-icons/md";
 import React from "react";
 import { toast } from "react-toastify";
 import { ChatService, MessageEnum } from "@/Services/ChatService";
-import { updateUser } from "@/Services/AuthService";
+import { updateUserApi } from "@/Services/AuthService";
 
 type Attachment = {
   type: MessageEnum;
@@ -31,10 +31,12 @@ export const ProfileOptions = ({
   className: string;
   chatService: ChatService;
 }) => {
-  const { user, token, logout } = useAuth();
+  const { user, getToken, logout, updateUser } = useAuth();
   const [rawFile, setRawFile] = React.useState<File | null>(null);
   const [loadedAttachment, setLoadedAttachment] =
     React.useState<Attachment | null>(null);
+
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -106,21 +108,35 @@ export const ProfileOptions = ({
 
     const type = checkAttachmentType(loadedAttachment?.path.toString() || "");
 
+    if (type !== MessageEnum.Image) {
+      toast.error("Only images are allowed");
+      return;
+    }
+
     let attachmentUrl = "";
 
     if (rawFile) {
       attachmentUrl = await chatService.uploadAttachment(rawFile, user?.id!);
     }
 
-    updateUser(
+    updateUserApi(
       {
         username: user?.username!,
         email: user?.email!,
         id: user?.id!,
         logo: attachmentUrl,
       },
-      token!
+      getToken()
     );
+
+    updateUser({
+      username: user?.username!,
+      email: user?.email!,
+      id: user?.id!,
+      logo: attachmentUrl,
+    });
+
+    setIsModalOpen(false);
   };
 
   return (
@@ -136,19 +152,19 @@ export const ProfileOptions = ({
             <h2 className="text-gray-500 text-xs">{user?.email}</h2>
           </div>
         </div>
-        <Dialog>
+        <Dialog onOpenChange={setIsModalOpen} open={isModalOpen}>
           <div className="flex items-center gap-2">
-            <MdLogout
-              size={20}
-              className="cursor-pointer text-gray-300 hover:text-gray-400"
-              onClick={logout}
-            />
             <DialogTrigger asChild>
               <IoIosSettings
                 className="cursor-pointer text-gray-300 hover:text-gray-400"
                 size={20}
               />
             </DialogTrigger>
+            <MdLogout
+              size={20}
+              className="cursor-pointer text-gray-300 hover:text-gray-400"
+              onClick={logout}
+            />
           </div>
           <DialogContent className="sm:max-w-[425px]">
             <form onSubmit={saveChanges} className="flex flex-col gap-2">

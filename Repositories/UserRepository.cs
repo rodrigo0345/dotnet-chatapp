@@ -45,7 +45,7 @@ namespace ShoppingProject.Repositories
 
             if (!String.IsNullOrWhiteSpace(queryObject.FilterBy))
             {
-                if(!String.IsNullOrWhiteSpace(queryObject.FilterValue))
+                if(String.IsNullOrWhiteSpace(queryObject.FilterValue))
                 {
                     return new List<UserDto>();
                 }
@@ -53,6 +53,11 @@ namespace ShoppingProject.Repositories
                 if(queryObject.FilterBy.Equals("Username"))
                 {
                     query = query.Where(c => c.UserName!.Contains(queryObject.FilterValue!));
+                }
+
+                if(queryObject.FilterBy.Equals("ChatGroupId"))
+                {
+                    query = query.SelectMany(c => c.JoinedChats).Where(c => c.ChatGroupId.ToString() == queryObject.FilterValue).Select(c => c.User);
                 }
             }
 

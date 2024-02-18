@@ -307,7 +307,7 @@ export default function CreateMessage({
             <Tooltip>
               <TooltipTrigger>
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarImage src={user?.logo} />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </TooltipTrigger>

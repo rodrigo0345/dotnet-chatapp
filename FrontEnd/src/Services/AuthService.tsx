@@ -49,7 +49,7 @@ export const logoutApi = async () => {
   }
 };
 
-export const updateUser = async (user: UserProfile, token: string) => {
+export const updateUserApi = async (user: UserProfile, token: string) => {
   try {
     const data = await axios.put(
       `${api}/account`,

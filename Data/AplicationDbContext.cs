@@ -34,6 +34,11 @@ namespace ShoppingProject.Data
             .HasIndex(p => new { p.ChatGroupId, p.UserId})
             .IsUnique(true);
 
+            builder.Entity<JoinedChat>()
+                .HasOne(p => p.User)
+                .WithMany(p => p.JoinedChats)
+                .HasForeignKey(p => p.UserId);
+
             base.OnModelCreating(builder);
             List<IdentityRole> roles = [
                 new IdentityRole { Name = Role.Admin.ToString(), NormalizedName = "ADMIN" },

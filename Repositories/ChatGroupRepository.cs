@@ -30,11 +30,6 @@ namespace chatapp.Repositories
             // check if the ownerId exists
             var foundOwner = await _context.Users.FirstOrDefaultAsync(c => c.Id == model.OwnerId, cancellationToken);
 
-            if(foundOwner == null)
-            {
-                return null;
-            }
-
             var id = Guid.NewGuid();
             _context.ChatGroups.Add(new ChatGroup
             {

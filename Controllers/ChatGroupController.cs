@@ -39,12 +39,19 @@ namespace chatapp.Controllers
                 Console.WriteLine($"Your id: {userId}");
             }
 
-            var result = await _chatGroupRepository.createOneAsync(createChatGroup, ct);
-            if (result != null)
+
+            try
             {
-                return Ok(result);
+                var result = await _chatGroupRepository.createOneAsync(createChatGroup, ct);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return StatusCode(501, "It was not possible to create the group");
+            } catch(Exception e)
+            {
+                return StatusCode(501, e.Message);
             }
-            return StatusCode(501, "It was not possible to create the group");
         }
 
         [HttpPut]

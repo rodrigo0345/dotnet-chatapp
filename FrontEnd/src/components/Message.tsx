@@ -239,7 +239,7 @@ export default function Message({
                   <HoverCardTrigger>
                     <AvatarImage
                       className="cursor-help object-cover"
-                      src="https://georgiapoliticalreview.com/wp-content/uploads/2014/04/Finn-The-Human.jpg"
+                      src={message.sender?.logo!}
                     />
                     <AvatarFallback className="h-8 w-8 object-cover">
                       CN

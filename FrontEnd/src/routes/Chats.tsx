@@ -50,19 +50,23 @@ export default function Chats() {
     const lchatid = us.getLastOpenChat();
 
     us.getMyChats().then((chats) => {
-      chats.data.forEach((chat) => {
+      const chatGroups = chats.data.filter((chat) => chat.isAccepted === true);
+      if (chatGroups.length === 0) return;
+      chatGroups.forEach((chat) => {
+        if (chat.isAccepted === false || chat.isBanned === true) return;
         cs.listenForChatChanges(chat.chatGroup.id, setChatList, selectedChat);
       });
-      setChatList(chats.data);
+      setChatList(chatGroups);
       setSelectedChat(() => {
-        const found = chats.data?.find((chat) => chat.chatGroup.id === lchatid);
-        return found ? found : chats.data[0];
+        const found = chatGroups.find((chat) => chat.chatGroup.id === lchatid);
+        return found ? found : chatGroups[0];
       });
     });
   }, []);
 
   useEffect(() => {
     console.log("chatList", chatList);
+    console.log({ user });
   }, [chatList]);
 
   return (

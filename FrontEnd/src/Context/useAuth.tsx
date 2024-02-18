@@ -14,6 +14,7 @@ type UserContextType = {
   logout: () => void;
   isLoggedIn: () => boolean;
   getToken: () => string;
+  updateUser: (user: UserProfile) => void;
 };
 
 type Props = {
@@ -99,6 +100,11 @@ export const UserProvider = ({ children }: Props) => {
     }
   };
 
+  const updateUser = async (user: UserProfile) => {
+    localStorage.setItem("user", JSON.stringify(user));
+    setUser(user);
+  };
+
   const isLoggedIn = () => {
     return !!user;
   };
@@ -125,6 +131,7 @@ export const UserProvider = ({ children }: Props) => {
         logout,
         isLoggedIn,
         getToken,
+        updateUser,
       }}
     >
       {isReady && children}

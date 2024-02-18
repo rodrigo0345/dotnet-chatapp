@@ -25,6 +25,7 @@ import { CiSearch } from "react-icons/ci";
 import { MdEdit } from "react-icons/md";
 import { InviteToChat } from "./InviteToChat";
 import VideoCall from "./VideoCall";
+import { UserProfile } from "@/Models/User";
 
 export default function Chat({
   selectedChat,
@@ -38,8 +39,18 @@ export default function Chat({
   setAllChats: any;
 }) {
   const [messages, setMessages] = useState<MessageType[]>([]);
+  const [userList, setUserList] = useState<UserProfile[]>([]);
 
   useEffect(() => {
+    if (!selectedChat) return;
+
+    chatService.getPeopleInChat(selectedChat.chatGroup.id).then((users) => {
+      if (!users?.data) return;
+      console.log(users.data, "users in chat");
+
+      setUserList(users?.data);
+    });
+
     return () => {
       setMessages([]);
 
@@ -172,6 +183,24 @@ export default function Chat({
                   Save
                   <IoIosSave size={20} />
                 </button>
+              </section>
+              {/* user list */}
+              <section className="px-4 py-4 flex flex-col gap-2">
+                <h3 className="text-2xl font-semibold text-gray-300">Users</h3>
+                {userList.map((user) => {
+                  return (
+                    <div className="flex gap-2 items-center px-4 py-2">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user.logo} />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col gap-0">
+                        <h1 className="text-gray-300 p-0">{user.username}</h1>
+                        <h2 className="text-gray-500 text-xs">{user.email}</h2>
+                      </div>
+                    </div>
+                  );
+                })}
               </section>
             </TabsContent>
             <TabsContent value="call">
