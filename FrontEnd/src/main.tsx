@@ -13,6 +13,7 @@ import Register from "./routes/Register.tsx";
 import Account from "./routes/Account.tsx";
 import Protected from "./routes/Protected.tsx";
 import { ProtectedRoute } from "./routes/ProtectedRoute.tsx";
+import TermsOfUse from "./routes/TermsOfUse.tsx";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
     children: [
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
+      { path: "termsOfUse", element: <TermsOfUse /> },
       {
         path: "/",
         element: (

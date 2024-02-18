@@ -2,6 +2,7 @@ import * as Yup from "yup";
 import { useAuth } from "../Context/useAuth";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 
 type Props = {};
 
@@ -113,7 +114,7 @@ const Register = (props: Props) => {
                 Already have an account?{" "}
                 <a
                   href="/login"
-                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                  className="font-medium text-primary-600 hover:underline dark:text-primary-500 underline text-blue-400 hover:text-blue-500"
                 >
                   Log in
                 </a>
@@ -121,6 +122,12 @@ const Register = (props: Props) => {
             </form>
           </div>
         </div>
+        <Link
+          to={"/termsOfUse"}
+          className="underline text-xs text-blue-400 hover:text-blue-500 text-center w-full"
+        >
+          Terms of Use
+        </Link>
       </div>
     </section>
   );

@@ -32,7 +32,7 @@ export const InviteToChat = ({
             type="text"
             name="username"
             className="text-sm text-gray-200 outline-none bg-transparent w-60"
-            placeholder="Username or Email"
+            placeholder="Username"
           />
         </div>
         <button
