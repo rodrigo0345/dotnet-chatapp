@@ -95,14 +95,12 @@ export default function Chat({
                     </div>
                   )}
                 </TabsTrigger> */}
-                {selectedChat.isAdmin && (
-                  <TabsTrigger
-                    className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1 "
-                    value="settings"
-                  >
-                    <IoMdSettings />
-                  </TabsTrigger>
-                )}
+                <TabsTrigger
+                  className="focus:bg-slate-700 data-[state=active]:bg-slate-300/80 w-16 flex gap-1 "
+                  value="settings"
+                >
+                  <IoMdSettings />
+                </TabsTrigger>
               </TabsList>
 
               <section className="flex items-center gap-3">
@@ -144,46 +142,50 @@ export default function Chat({
               ></CreateMessage>
             </TabsContent>
             <TabsContent value="settings" className="relative grow h-full">
-              <InviteToChat
-                chatGroupId={selectedChat.chatGroup.id}
-                chatService={chatService}
-              ></InviteToChat>
-              <section className="px-4 py-4 flex flex-col gap-2">
-                <h3 className="text-2xl font-semibold text-gray-300">
-                  Chat Settings
-                </h3>
-                <div className="flex gap-4 items-center mt-4">
-                  <button
-                    type="button"
-                    className="group relative h-16 w-16 overflow-hidden"
-                  >
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage
-                        className="object-cover"
-                        src={selectedChat.chatGroup.logo}
-                      />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div className="hidden group-hover:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all bg-gray-800/20 hover:backdrop-blur-sm h-full w-full items-center justify-center rounded-full">
-                      <MdEdit />
+              {selectedChat.isAdmin && (
+                <>
+                  <InviteToChat
+                    chatGroupId={selectedChat.chatGroup.id}
+                    chatService={chatService}
+                  ></InviteToChat>
+                  <section className="px-4 py-4 flex flex-col gap-2">
+                    <h3 className="text-2xl font-semibold text-gray-300">
+                      Chat Settings
+                    </h3>
+                    <div className="flex gap-4 items-center mt-4">
+                      <button
+                        type="button"
+                        className="group relative h-16 w-16 overflow-hidden"
+                      >
+                        <Avatar className="h-16 w-16">
+                          <AvatarImage
+                            className="object-cover"
+                            src={selectedChat.chatGroup.logo}
+                          />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                        <div className="hidden group-hover:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all bg-gray-800/20 hover:backdrop-blur-sm h-full w-full items-center justify-center rounded-full">
+                          <MdEdit />
+                        </div>
+                      </button>
+                      <div className="flex items-center px-2 pl-4 py-2 gap-2 border-b-2 border-gray-300">
+                        <input
+                          type="text"
+                          className="text-gray-200 outline-none bg-transparent w-60 text-xl"
+                          placeholder={selectedChat.chatGroup.name}
+                        />
+                      </div>
                     </div>
-                  </button>
-                  <div className="flex items-center px-2 pl-4 py-2 gap-2 border-b-2 border-gray-300">
-                    <input
-                      type="text"
-                      className="text-gray-200 outline-none bg-transparent w-60 text-xl"
-                      placeholder={selectedChat.chatGroup.name}
-                    />
-                  </div>
-                </div>
-                <button
-                  onClick={() => {}}
-                  className="w-fit bg-blue-950/80 text-sm px-2 py-2 mt-4  h-full flex gap-2 items-center justify-center relative rounded-md text-gray-300 hover:brightness-125 transition-all"
-                >
-                  Save
-                  <IoIosSave size={20} />
-                </button>
-              </section>
+                    <button
+                      onClick={() => {}}
+                      className="w-fit bg-blue-950/80 text-sm px-2 py-2 mt-4  h-full flex gap-2 items-center justify-center relative rounded-md text-gray-300 hover:brightness-125 transition-all"
+                    >
+                      Save
+                      <IoIosSave size={20} />
+                    </button>
+                  </section>
+                </>
+              )}
               {/* user list */}
               <section className="px-4 py-4 flex flex-col gap-2">
                 <h3 className="text-2xl font-semibold text-gray-300">Users</h3>
