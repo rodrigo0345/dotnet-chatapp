@@ -355,7 +355,7 @@ export default function CreateMessage({
           </label>
           <button
             type="submit"
-            className="w-10 h-10 text-sm bg-blue-500 flex justify-center items-center rounded-full hover:bg-blue-500/40 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 text-slate-950 hover:text-slate-200 disabled:bg-blue-500/40"
+            className="w-8 h-8 text-sm bg-blue-500 flex justify-center items-center rounded-full hover:bg-blue-500/40 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 text-slate-950 hover:text-slate-200 disabled:bg-blue-500/40 flex-shrink-0"
             {...(loadingAttachment > 0.0 &&
               loadingAttachment != 100 && { disabled: true })}
           >

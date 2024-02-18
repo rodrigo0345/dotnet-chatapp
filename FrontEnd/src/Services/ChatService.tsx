@@ -279,4 +279,26 @@ export class ChatService {
       handleError(e);
     }
   };
+
+  updateChat = async (chatGroupId: string, name: string, logo: string) => {
+    try {
+      const data = await axios.put(
+        `${api}/group`,
+        {
+          id: chatGroupId,
+          name,
+          logo,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this._token}`,
+          },
+        }
+      );
+      toast.success("Chat updated");
+      return data;
+    } catch (e) {
+      handleError(e);
+    }
+  };
 }

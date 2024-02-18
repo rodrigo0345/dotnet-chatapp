@@ -26,6 +26,7 @@ import { MdEdit } from "react-icons/md";
 import { InviteToChat } from "./InviteToChat";
 import VideoCall from "./VideoCall";
 import { UserProfile } from "@/Models/User";
+import { EditChat } from "./EditChat";
 
 export default function Chat({
   selectedChat,
@@ -148,42 +149,11 @@ export default function Chat({
                     chatGroupId={selectedChat.chatGroup.id}
                     chatService={chatService}
                   ></InviteToChat>
-                  <section className="px-4 py-4 flex flex-col gap-2">
-                    <h3 className="text-2xl font-semibold text-gray-300">
-                      Chat Settings
-                    </h3>
-                    <div className="flex gap-4 items-center mt-4">
-                      <button
-                        type="button"
-                        className="group relative h-16 w-16 overflow-hidden"
-                      >
-                        <Avatar className="h-16 w-16">
-                          <AvatarImage
-                            className="object-cover"
-                            src={selectedChat.chatGroup.logo}
-                          />
-                          <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                        <div className="hidden group-hover:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all bg-gray-800/20 hover:backdrop-blur-sm h-full w-full items-center justify-center rounded-full">
-                          <MdEdit />
-                        </div>
-                      </button>
-                      <div className="flex items-center px-2 pl-4 py-2 gap-2 border-b-2 border-gray-300">
-                        <input
-                          type="text"
-                          className="text-gray-200 outline-none bg-transparent w-60 text-xl"
-                          placeholder={selectedChat.chatGroup.name}
-                        />
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {}}
-                      className="w-fit bg-blue-950/80 text-sm px-2 py-2 mt-4  h-full flex gap-2 items-center justify-center relative rounded-md text-gray-300 hover:brightness-125 transition-all"
-                    >
-                      Save
-                      <IoIosSave size={20} />
-                    </button>
-                  </section>
+                  <EditChat
+                    selectedChat={selectedChat}
+                    setAllChats={setAllChats}
+                    chatService={chatService}
+                  ></EditChat>
                 </>
               )}
               {/* user list */}
@@ -191,7 +161,7 @@ export default function Chat({
                 <h3 className="text-2xl font-semibold text-gray-300">Users</h3>
                 {userList.map((user) => {
                   return (
-                    <div className="flex gap-2 items-center px-4 py-2">
+                    <div className="flex gap-2 items-center py-2">
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={user.logo} />
                         <AvatarFallback>CN</AvatarFallback>

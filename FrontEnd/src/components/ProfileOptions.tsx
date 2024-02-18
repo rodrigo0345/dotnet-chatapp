@@ -13,12 +13,18 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { MdEdit, MdLogout } from "react-icons/md";
-import React from "react";
+import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { ChatService, MessageEnum } from "@/Services/ChatService";
 import { updateUserApi } from "@/Services/AuthService";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
-type Attachment = {
+export type Attachment = {
   type: MessageEnum;
   content: string;
   path: string;
@@ -35,8 +41,15 @@ export const ProfileOptions = ({
   const [rawFile, setRawFile] = React.useState<File | null>(null);
   const [loadedAttachment, setLoadedAttachment] =
     React.useState<Attachment | null>(null);
-
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  useEffect(() => {
+    setLoadedAttachment({
+      content: user?.logo!,
+      path: user?.logo!,
+      type: MessageEnum.Image,
+    });
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -154,17 +167,47 @@ export const ProfileOptions = ({
         </div>
         <Dialog onOpenChange={setIsModalOpen} open={isModalOpen}>
           <div className="flex items-center gap-2">
-            <DialogTrigger asChild>
-              <IoIosSettings
-                className="cursor-pointer text-gray-300 hover:text-gray-400"
-                size={20}
-              />
-            </DialogTrigger>
-            <MdLogout
-              size={20}
-              className="cursor-pointer text-gray-300 hover:text-gray-400"
-              onClick={logout}
-            />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <button
+                    onClick={() => {
+                      setIsModalOpen(!isModalOpen);
+                    }}
+                    className="flex items-center"
+                  >
+                    <IoIosSettings
+                      className="cursor-pointer text-gray-300 hover:text-gray-400"
+                      size={20}
+                    />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>User Settings</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <button
+                    onClick={() => {
+                      logout();
+                    }}
+                    className="flex items-center"
+                  >
+                    <MdLogout
+                      size={20}
+                      className="cursor-pointer text-gray-300 hover:text-red-400"
+                      onClick={logout}
+                    />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Logout</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           <DialogContent className="sm:max-w-[425px]">
             <form onSubmit={saveChanges} className="flex flex-col gap-2">
