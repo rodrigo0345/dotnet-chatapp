@@ -18,7 +18,7 @@ export default function App() {
     <div className="h-full relative ">
       <ToastContainer />
       <UserProvider>
-        <div className="m-auto max-w-[1024px] h-full relative margin-auto bg-slate-900">
+        <div className="m-auto max-w-[1024px] h-full relative margin-auto bg-slate-900 shadow-md">
           <Outlet />
         </div>
       </UserProvider>
